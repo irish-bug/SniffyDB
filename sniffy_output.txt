@@ -1,0 +1,184 @@
+Packet #  1  
+Ether / IP / UDP 0.0.0.0:bootpc > 255.255.255.255:bootps / BOOTP / DHCP
+ 
+###[ Ethernet ]###
+  dst       = ff:ff:ff:ff:ff:ff
+  src       = 00:0b:82:01:fc:42
+  type      = 0x800
+###[ IP ]###
+     version   = 4L
+     ihl       = 5L
+     tos       = 0x0
+     len       = 300
+     id        = 43062
+     flags     = 
+     frag      = 0L
+     ttl       = 250
+     proto     = udp
+     chksum    = 0x178b
+     src       = 0.0.0.0
+     dst       = 255.255.255.255
+     \options   \
+###[ UDP ]###
+        sport     = bootpc
+        dport     = bootps
+        len       = 280
+        chksum    = 0x591f
+###[ BOOTP ]###
+           op        = BOOTREQUEST
+           htype     = 1
+           hlen      = 6
+           hops      = 0
+           xid       = 15645
+           secs      = 0
+           flags     = 
+           ciaddr    = 0.0.0.0
+           yiaddr    = 0.0.0.0
+           siaddr    = 0.0.0.0
+           giaddr    = 0.0.0.0
+           chaddr    = '\x00\x0b\x82\x01\xfcB\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           sname     = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           file      = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           options   = 'c\x82Sc'
+###[ DHCP options ]###
+              options   = [message-type=discover client_id='\x01\x00\x0b\x82\x01\xfcB' requested_addr=0.0.0.0 param_req_list='\x01\x03\x06*' end pad pad pad pad pad pad pad]
+None
+ 
+Packet #  2  
+Ether / IP / UDP 192.168.0.1:bootps > 192.168.0.10:bootpc / BOOTP / DHCP
+ 
+###[ Ethernet ]###
+  dst       = 00:0b:82:01:fc:42
+  src       = 00:08:74:ad:f1:9b
+  type      = 0x800
+###[ IP ]###
+     version   = 4L
+     ihl       = 5L
+     tos       = 0x0
+     len       = 328
+     id        = 1093
+     flags     = 
+     frag      = 0L
+     ttl       = 128
+     proto     = udp
+     chksum    = 0x0
+     src       = 192.168.0.1
+     dst       = 192.168.0.10
+     \options   \
+###[ UDP ]###
+        sport     = bootps
+        dport     = bootpc
+        len       = 308
+        chksum    = 0x2233
+###[ BOOTP ]###
+           op        = BOOTREPLY
+           htype     = 1
+           hlen      = 6
+           hops      = 0
+           xid       = 15645
+           secs      = 0
+           flags     = 
+           ciaddr    = 0.0.0.0
+           yiaddr    = 192.168.0.10
+           siaddr    = 192.168.0.1
+           giaddr    = 0.0.0.0
+           chaddr    = '\x00\x0b\x82\x01\xfcB\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           sname     = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           file      = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           options   = 'c\x82Sc'
+###[ DHCP options ]###
+              options   = [message-type=offer subnet_mask=255.255.255.0 renewal_time=1800 rebinding_time=3150 lease_time=3600 server_id=192.168.0.1 end pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad]
+None
+ 
+Packet #  3  
+Ether / IP / UDP 0.0.0.0:bootpc > 255.255.255.255:bootps / BOOTP / DHCP
+ 
+###[ Ethernet ]###
+  dst       = ff:ff:ff:ff:ff:ff
+  src       = 00:0b:82:01:fc:42
+  type      = 0x800
+###[ IP ]###
+     version   = 4L
+     ihl       = 5L
+     tos       = 0x0
+     len       = 300
+     id        = 43063
+     flags     = 
+     frag      = 0L
+     ttl       = 250
+     proto     = udp
+     chksum    = 0x178a
+     src       = 0.0.0.0
+     dst       = 255.255.255.255
+     \options   \
+###[ UDP ]###
+        sport     = bootpc
+        dport     = bootps
+        len       = 280
+        chksum    = 0x9fbd
+###[ BOOTP ]###
+           op        = BOOTREQUEST
+           htype     = 1
+           hlen      = 6
+           hops      = 0
+           xid       = 15646
+           secs      = 0
+           flags     = 
+           ciaddr    = 0.0.0.0
+           yiaddr    = 0.0.0.0
+           siaddr    = 0.0.0.0
+           giaddr    = 0.0.0.0
+           chaddr    = '\x00\x0b\x82\x01\xfcB\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           sname     = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           file      = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           options   = 'c\x82Sc'
+###[ DHCP options ]###
+              options   = [message-type=request client_id='\x01\x00\x0b\x82\x01\xfcB' requested_addr=192.168.0.10 server_id=192.168.0.1 param_req_list='\x01\x03\x06*' end pad]
+None
+ 
+Packet #  4  
+Ether / IP / UDP 192.168.0.1:bootps > 192.168.0.10:bootpc / BOOTP / DHCP
+ 
+###[ Ethernet ]###
+  dst       = 00:0b:82:01:fc:42
+  src       = 00:08:74:ad:f1:9b
+  type      = 0x800
+###[ IP ]###
+     version   = 4L
+     ihl       = 5L
+     tos       = 0x0
+     len       = 328
+     id        = 1094
+     flags     = 
+     frag      = 0L
+     ttl       = 128
+     proto     = udp
+     chksum    = 0x0
+     src       = 192.168.0.1
+     dst       = 192.168.0.10
+     \options   \
+###[ UDP ]###
+        sport     = bootps
+        dport     = bootpc
+        len       = 308
+        chksum    = 0xdfdb
+###[ BOOTP ]###
+           op        = BOOTREPLY
+           htype     = 1
+           hlen      = 6
+           hops      = 0
+           xid       = 15646
+           secs      = 0
+           flags     = 
+           ciaddr    = 0.0.0.0
+           yiaddr    = 192.168.0.10
+           siaddr    = 0.0.0.0
+           giaddr    = 0.0.0.0
+           chaddr    = '\x00\x0b\x82\x01\xfcB\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           sname     = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           file      = '\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00'
+           options   = 'c\x82Sc'
+###[ DHCP options ]###
+              options   = [message-type=ack renewal_time=1800 rebinding_time=3150 lease_time=3600 server_id=192.168.0.1 subnet_mask=255.255.255.0 end pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad pad]
+None
+ 
