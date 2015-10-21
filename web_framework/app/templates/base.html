@@ -1,0 +1,18 @@
+<html>
+<head>
+    {% if title %}
+    <title>{{ title }} - SniffyDB</title>
+    {% else %}
+    <title>SniffyDB</title>
+    {% endif %}
+  </head>
+  <body>
+    <div>SniffyDB: <a href="/index">Home</a></div>
+    <div>SniffyDB: <a href="/add_page">Add Data</a></div>
+    <div>SniffyDB: <a href="/view_page">View Data</a></div>
+    <div>SniffyDB: <a href="/search_page">Search Data</a></div>
+    <div>SniffyDB: <a href="/edit_page">Edit Data</a></div>
+    <div>SniffyDB: <a href="/delete_page">Delete Data</a></div>
+    {% block content %}{% endblock %}
+  </body>
+</html>

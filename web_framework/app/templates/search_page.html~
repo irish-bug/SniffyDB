@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Search Data</h1>
+
+{% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+{% endfor %}
+<form action="" method="post" name="search data">
+    {{ form.hidden_tag() }}
+
+    {{ form.PcapID.label }}
+    {{ form.PcapID }}
+
+    {{ form.PIN.label }}
+    {{ form.PIN }}
+
+    {{ form.submit }}
+</form>
+{% if entries is not none %}
+<h2> Search Result </h2>
+<table style="width:100%">
+  <tr>
+    <th>Destination IP</th>
+    <th>Source IP</th> 
+    <th>Protocol</th>
+    <th>Sequence Window</th>
+    <th>Packet Length</th> 
+    <th>Payload</th>
+    <th>Timestamp</th>
+    <th>PCAP file ID</th> 
+    <th>PIN</th>
+  </tr>
+{% for entry in entries %}
+<tr>
+	<td> {{ entry.dst }} </td>
+	<td> {{ entry.src }} </td>
+	<td> {{ entry.proto }} </td>
+	<td> {{ entry.seqwindow }} </td>
+	<td> {{ entry.length }} </td>
+	<td> {{ entry.payload }} </td>
+	<td> {{ entry.time }} </td>
+	<td> {{ entry.PcapID }} </td>
+	<td> {{ entry.PIN }} </td>
+</tr>
+{% endfor %}
+</table>
+{% endif %}
+{% endblock %}
