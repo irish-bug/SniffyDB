@@ -84,7 +84,7 @@ for p in pkts:
             json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))
             pcap_json.write(str(',\n'))   
     if p.haslayer(ARP):
-        packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": "ARP", "seq-window": "None", "length": p[ARP].plen}}
+        packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": "ARP", "seq-window": "None", "length": p[ARP].plen, "Load": "None"}}
         json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))            
         pcap_json.write(str(',\n'))
 #except Exception as e:
