@@ -61,7 +61,8 @@ pkts = rdpcap(pcap)
 
 pkt_no = 0
 #sys.stdout = open('sniffy_output.txt', 'w')
-pcap_json = codecs.open('pcap.json', encoding='utf-8', mode='w+')
+pcap_json = codecs.open('pcap.json', encoding='latin-1', mode='w+')
+pcap_test = open('test.json', 'w')
 
 #try:
 for p in pkts:
@@ -71,6 +72,7 @@ for p in pkts:
         if p.haslayer(Raw):
             try:
                 packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": p[Raw].load}}
+                json.dump(packet_info, pcap_test)
                 json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))
             except:
                 packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "Invalid data"}}
