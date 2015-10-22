@@ -8,6 +8,7 @@
 import sys 
 import json
 import codecs
+import base64
 
 #used to silence unnecessary warnings
 import logging
@@ -75,7 +76,7 @@ for p in pkts:
     if p.haslayer(IP):
         if p.haslayer(Raw):
             try:
-                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": unicode(p[Raw].load, "utf-8")}
+                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": base64.urlsafe_b64encode(p[Raw].load)}
                 json.dump(packet_info, _test, sort_keys=True, indent=4, separators=(',', ': '))
                 packet_data.append(packet_info)
 
