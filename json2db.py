@@ -55,7 +55,7 @@ def table_conversation(database, pcapid, packets):
     # create a new table if not already exists
     cursor.execute('CREATE TABLE IF NOT EXISTS Conversation ('
                    'pcapid VARCHAR(255),'
-                   'seqwindow INT,'
+                   'seqwindow INT DEFAULT 0,'
                    'src VARCHAR(15) DEFAULT NULL,'
                    'dst VARCHAR(15) DEFAULT NULL,'
                    'len INT DEFAULT 0,'
@@ -109,7 +109,7 @@ def table_combined(database, pcapid, packets):
                    'pcapid VARCHAR(255),'
                    'pin INT,'
                    'packettime VARCHAR(255) NOT NULL,'
-                   'seqwindow INT DEFAULT -1,'
+                   'seqwindow INT DEFAULT 0,'
                    'src VARCHAR(15) DEFAULT NULL,'
                    'dst VARCHAR(15) DEFAULT NULL,'
                    'protocol INT DEFAULT -1,'
@@ -121,6 +121,7 @@ def table_combined(database, pcapid, packets):
 
     # Insert a row for every packet. ignore if the primary key already exists.
     for packet in packets:
+    #    print str(packet['PIN'])+'------------'+packet['Load'] # for debuggin payload display issue
         cursor.execute('INSERT IGNORE INTO Combined (pcapid, pin, packettime, seqwindow, src, dst, protocol, len, payload)'
                        'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);',
                        (pcapid, packet['PIN'], packet['time'], packet['seq-window'], packet['src'], packet['dest'], packet['protocol'], packet['length'], packet['Load']))
