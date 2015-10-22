@@ -190,7 +190,7 @@ def upload():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			os.system("../pcap2db.sh ../../pcaps/" + filename)
+			os.system("../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
 
 @app.route('/add')
