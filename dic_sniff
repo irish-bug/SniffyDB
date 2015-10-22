@@ -64,6 +64,7 @@ pkt_no = 0
 pcap_json = open('pcap.json', 'wr+')
 pcap_test = open('test.json', 'w')
 packets = []
+packet_data = []
 
 
 #try:
@@ -73,12 +74,12 @@ for p in pkts:
     if p.haslayer(IP):
         if p.haslayer(Raw):
             try:
-                packets.append({"PcapID": pcap, "Load": "some data found", "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len})
+                packet_data.append({"PcapID": pcap, "Load": "some data found", "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len})
 
             except:
-                packets.append({"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "Invalid Data"})
+                packet_data.append({"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "Invalid Data"})
         else:
-            packets.append({"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "None"})  
+            packet_data.append({"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "None"})  
     if p.haslayer(ARP):
         packets.append({"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": "ARP", "seq-window": "None", "length": p[ARP].plen, "Load": "None"})
 
