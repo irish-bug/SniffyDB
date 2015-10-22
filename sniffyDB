@@ -9,6 +9,7 @@ import sys
 import json
 import codecs
 import base64
+import os
 
 #used to silence unnecessary warnings
 import logging
@@ -50,12 +51,14 @@ if sys.argv[1] == "--help":
 # Set pcap to the name of the file and open it
 # Print to screen that pcap is being opened 
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 pcap = sys.argv[1]
 print " "
 print " Opening",
 print sys.argv[1]
 print " "
-filename = "/home/project/sniffydb/pcaps/" + pcap
+filename = basedir + "/../pcaps/" + pcap
 pkts = rdpcap(filename)
 
 # Read all packets from pcap file and filter out
@@ -66,9 +69,6 @@ pkt_no = 0
 pcap_json = open('pcap.json', 'w+')
 _test = open('_temp', 'w+')
 packet_data = []
-
-
-
 
 
 for p in pkts:
