@@ -1,0 +1,95 @@
+{
+    "PcapID": "traffic-5.pcap",
+    "Packets": [
+        {
+            "Load": "",
+            "PIN": 1,
+            "dest": "172.16.4.2",
+            "length": 65,
+            "protocol": 17,
+            "seq-window": 42162,
+            "src": "172.16.4.236",
+            "time": 1410628697.937707
+        },
+        {
+            "Load": "",
+            "PIN": 2,
+            "dest": "172.16.4.2",
+            "length": 65,
+            "protocol": 17,
+            "seq-window": 42163,
+            "src": "172.16.4.236",
+            "time": 1410628697.9379
+        },
+        {
+            "Load": "",
+            "PIN": 3,
+            "dest": "172.16.4.236",
+            "length": 81,
+            "protocol": 17,
+            "seq-window": 50512,
+            "src": "172.16.4.2",
+            "time": 1410628697.965432
+        },
+        {
+            "Load": "",
+            "PIN": 4,
+            "dest": "172.16.4.236",
+            "length": 116,
+            "protocol": 17,
+            "seq-window": 50513,
+            "src": "172.16.4.2",
+            "time": 1410628697.971073
+        },
+        {
+            "Load": "",
+            "PIN": 5,
+            "dest": "54.209.255.182",
+            "length": 60,
+            "protocol": 6,
+            "seq-window": 58495,
+            "src": "172.16.4.236",
+            "time": 1410628697.971269
+        },
+        {
+            "Load": "",
+            "PIN": 6,
+            "dest": "172.16.4.236",
+            "length": 44,
+            "protocol": 6,
+            "seq-window": 50514,
+            "src": "54.209.255.182",
+            "time": 1410628697.995172
+        },
+        {   
+            "Load": "",
+            "PIN": 7,
+            "dest": "54.209.255.182",
+            "length": 40,
+            "protocol": 6,
+            "seq-window": 58496,
+            "src": "172.16.4.236",
+            "time": 1410628697.99521
+        },
+        {
+            "Load": "GET / HTTP/1.1\r\nHost: engineering.nyu.edu\r\nAccept-Encoding: gzip, deflate, compress\r\nAccept: */*\r\nUser-Agent: python-requests/2.2.1 CPython/2.7.6 Linux/3.13.0-35-generic\r\n\r\n",
+            "PIN": 8,
+            "dest": "54.209.255.182",
+            "length": 213,
+            "protocol": 6,
+            "seq-window": 58497,
+            "src": "172.16.4.236",
+            "time": 1410628697.99568
+        },
+        {
+            "Load": "Invalid data",
+            "PIN": 47,
+            "dest": "172.16.4.236",
+            "length": 84,
+            "protocol": 1,
+            "seq-window": 39411,
+            "src": "172.16.4.235",
+            "time": 1410628700.185955
+        }
+    ]
+}
