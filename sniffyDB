@@ -62,33 +62,37 @@ pkts = rdpcap(pcap)
 pkt_no = 0
 #sys.stdout = open('sniffy_output.txt', 'w')
 pcap_json = codecs.open('pcap.json', encoding='latin-1', mode='w+')
-pcap_test = open('test.json', 'w')
+_test = open('_temp', 'w+')
+packet_data = []
 
-#try:
+
+
+
 for p in pkts:
     pkt_no += 1
     ## write summary and other info from packets to file
     if p.haslayer(IP):
         if p.haslayer(Raw):
             try:
-                packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": p[Raw].load}}
-                json.dump(packet_info, pcap_test)
-                json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))
-                pcap_json.write(str(',\n'))
+                packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": unicode(p[Raw].load, "utf-8")}}
+                json.dump(packet_info, _test, sort_keys=True, indent=4, separators=(',', ': '))
+                packet_data.append(packet_info)
+
             except:
                 packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "Invalid data"}}
-                json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))
-                pcap_json.write(str(',\n'))
+                packet_data.append(packet_info)
+
         else:
             packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "None"}}        
-            json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))
-            pcap_json.write(str(',\n'))   
+            packet_data.append(packet_info)
+   
     if p.haslayer(ARP):
         packet_info = {"Packet": {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": "ARP", "seq-window": "None", "length": p[ARP].plen, "Load": "None"}}
-        json.dump(packet_info, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))            
-        pcap_json.write(str(',\n'))
-#except Exception as e:
-#    print 'Error within packet: ' + str(pkt_no) + ' . The full error was: ' + str(e) 
+        packet_data.append(packet_info)
+
+pcap_data = [{pcap: packet_data}]
+json.dump(pcap_data, pcap_json, sort_keys=True, indent=4, separators=(',', ': '))
+
 
 sys.stdout = sys.__stdout__
 if pkt_no > 0:
