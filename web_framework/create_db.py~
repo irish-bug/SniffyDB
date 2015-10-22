@@ -1,5 +1,6 @@
 import MySQLdb
 
+__author__ = "Donald Cha"
 
 class Database:
 
@@ -41,20 +42,10 @@ if __name__ == "__main__":
 
 	# Create table
 	query = """
-	CREATE TABLE pcap (
-	dst VARCHAR(15),
-	src VARCHAR(15),
-	proto VARCHAR(100) DEFAULT 'UNKNOWN',
-	seq-window INT(100),
-	length INT(100),
-	load VARCHAR(2000) DEFAULT 'NONE',
-	time VARCHAR(100),
-	PcapID VARCHAR(100),
-	PIN INT(100),
-	PRIMARY KEY (PcapID, PIN)) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1
+	CREATE TABLE pcap (dst VARCHAR(15), src VARCHAR(15), proto VARCHAR(100) DEFAULT 'UNKNOWN', seqwindow INT(100), length INT(100), payload VARCHAR(2000) DEFAULT 'NONE', time VARCHAR(100), PcapID VARCHAR(100), PIN INT(100), PRIMARY KEY (PcapID, PIN));
 	"""
 
-	# db.query(query)
+	db.query(query)
 	#db.insert(query)
 
 	# Data retrieved from the table

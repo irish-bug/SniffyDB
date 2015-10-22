@@ -2,13 +2,17 @@ from flask import render_template, flash, redirect, request
 from app import app
 from flask.ext.mysqldb import MySQLdb
 from forms import SubmitForm, SearchForm, DeleteForm, EditForm
+from werkzeug import secure_filename
+import os
+
+__author__ = "Donald Cha"
 
 class Database:
 
-	host = 'localhost'
-	user = 'root'
-	password = ''
-	db = 'testdb'
+	host = '127.0.0.1'
+	user = 'sniffydb_dev'
+	password = 'sniffy+DB'
+	db = 'sniffydb_main'
 
 	def __init__(self):
 		self.connection = MySQLdb.connect(self.host, self.user, 		self.password, self.db)
@@ -58,7 +62,7 @@ def add_page():
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
-				query = """INSERT INTO pcap values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+dst+"'", "'"+src+"'", "'"+proto+"'", seqwindow, length, "'"+payload+"'", "'"+time+"'", "'"+PcapID+"'", PIN)
+				query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+dst+"'", "'"+src+"'", "'"+proto+"'", seqwindow, length, "'"+payload+"'", "'"+time+"'", "'"+PcapID+"'", PIN)
 				db.execute(query)
 				flash('Data Added.')
 				return redirect('/add_page')
@@ -72,16 +76,16 @@ def add_page():
 
 @app.route('/view_page', methods=['GET'])
 def view_page():
-	cur = db.query("""SELECT * FROM pcap""")
+	cur = db.query("""SELECT * FROM Combined""")
 	entries = [dict(dst=row['dst'],
 			src=row['src'],
-			proto=row['proto'],
+			proto=row['protocol'],
 			seqwindow=row['seqwindow'],
-			length=row['length'],
+			length=row['len'],
 			payload=row['payload'],
-			time=row['time'],
-			PcapID=row['PcapID'],
-			PIN=row['PIN']) for row in cur]
+			time=row['packettime'],
+			PcapID=row['pcapid'],
+			PIN=row['pin']) for row in cur]
 	return render_template('view_page.html', entries=entries)
 
 @app.route('/search_page', methods=['GET', 'POST'])
@@ -95,17 +99,17 @@ def search_page():
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
-				query = """SELECT * FROM pcap WHERE PcapID=%s AND PIN=%d""" %  ("'"+PcapID+"'", PIN)
+				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
 				cur = db.query(query)
 				entries = [dict(dst=row['dst'],
 				src=row['src'],
-				proto=row['proto'],
+				proto=row['protocol'],
 				seqwindow=row['seqwindow'],
-				length=row['length'],
+				length=row['len'],
 				payload=row['payload'],
-				time=row['time'],
-				PcapID=row['PcapID'],
-				PIN=row['PIN']) for row in cur]
+				time=row['packettime'],
+				PcapID=row['pcapid'],
+				PIN=row['pin']) for row in cur]
 				return render_template('search_page.html', form=form, entries=entries)
 			except:
 				print "Error"
@@ -125,12 +129,12 @@ def delete_page():
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
-				query = """SELECT * FROM pcap WHERE PcapID=%s AND PIN=%d""" %  ("'"+PcapID+"'", PIN)
+				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
 				cur = db.query(query)
 				if len(cur) == 0:
 					flash('Data does not exist')
 				else:
-					query = """DELETE FROM pcap WHERE PcapID=%s AND PIN=%d""" %  ("'"+PcapID+"'", PIN)
+					query = """DELETE FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
 					db.execute(query)
 					flash('Data Deleted.')
 				return redirect('/delete_page')
@@ -153,15 +157,15 @@ def edit_page():
 			PIN = form.PIN.data
 			choice = form.select.data
 			new_val = form.new_val.data
-			if not (choice == 'seqwindow' or choice == 'length'):
+			if not (choice == 'seqwindow' or choice == 'len' or choie == 'protocol'):
 				new_val = "'"+new_val+"'"
 			try:
-				query = """SELECT * FROM pcap WHERE PcapID=%s AND PIN=%d""" %  ("'"+PcapID+"'", PIN)
+				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
 				cur = db.query(query)
 				if len(cur) == 0:
 					flash('Data does not exist')
 				else:
-					query = """UPDATE pcap SET %s=%s WHERE PcapID=%s AND PIN=%d""" %  (choice, new_val, "'"+PcapID+"'", PIN)
+					query = """UPDATE Combined SET %s=%s WHERE pcapid=%s AND pin=%d""" %  (choice, new_val, "'"+PcapID+"'", PIN)
 					db.execute(query)
 					flash('Data editted.')
 				return redirect('/edit_page')
@@ -172,10 +176,27 @@ def edit_page():
 	elif request.method == 'GET':
 		return render_template('edit_page.html', form=form)
 
+# For a given file, return whether it's an allowed type or not
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
+
+# Route that will process the file upload
+@app.route('/upload', methods=['POST', 'GET'])
+def upload():
+	if request.method == 'POST':
+		file = request.files['file']
+		# Check if the file is one of the allowed types/extensions
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			os.system("../pcap2db.sh ../../pcaps" + filename)
+	return render_template('upload_page.html')
+
 @app.route('/add')
 def add():
 	try:
-		query = """INSERT INTO pcap values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'1'", "'1'", "'1'", 1, 1, "'1'", "'1'", "'1'", 1)
+		query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'1'", "'1'", "'1'", 1, 1, "'1'", "'1'", "'1'", 1)
 		db.execute(query)
 		return redirect('/index')
 	except:

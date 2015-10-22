@@ -1,5 +1,6 @@
 import MySQLdb
 
+__author__ = "Donald Cha"
 
 class Database:
 

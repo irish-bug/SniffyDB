@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Upload File</h1>
+
+{% for message in get_flashed_messages() %}
+    <div class="flash">{{ message }}</div>
+{% endfor %}
+<form action="upload" method="post" name="Upload File" enctype="multipart/form-data">
+	<input type="file" name="file"><br /><br />
+	<input type="submit" value="Upload">
+</form>
+{% endblock %}

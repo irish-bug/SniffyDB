@@ -35,5 +35,7 @@
 
     {{ form.PIN.label }}
     {{ form.PIN }}
+
+    {{ form.submit }}
 </form>
 {% endblock %}

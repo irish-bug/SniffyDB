@@ -2,14 +2,16 @@ from flask.ext.wtf import Form
 from wtforms import StringField, SubmitField, IntegerField, SelectField, TextField
 from wtforms.validators import DataRequired
 
+__author__ = "Donald Cha"
+
 class SubmitForm(Form):
-	src = StringField('src', validators=[DataRequired()])	
-	dst = StringField('dst', validators=[DataRequired()])
-	proto = StringField('proto', validators=[DataRequired()])
-	seqwindow = IntegerField('seqwindow', validators=[DataRequired()])
-	length = IntegerField('length', validators=[DataRequired()])
-	payload = StringField('payload', validators=[DataRequired()])
-	time = StringField('time', validators=[DataRequired()])
+	src = StringField('Source IP', validators=[DataRequired()])	
+	dst = StringField('Destination IP', validators=[DataRequired()])
+	proto = StringField('Protocol', validators=[DataRequired()])
+	seqwindow = IntegerField('Sequence Window', validators=[DataRequired()])
+	length = IntegerField('Packet Length', validators=[DataRequired()])
+	payload = StringField('Payload', validators=[DataRequired()])
+	time = StringField('Packet Time', validators=[DataRequired()])
 	PcapID = StringField('PcapID', validators=[DataRequired()])
 	PIN = IntegerField('PIN', validators=[DataRequired()])
 	submit = SubmitField("Send")
@@ -28,8 +30,8 @@ class EditForm(Form):
 	PcapID = StringField('PcapID', validators=[DataRequired()])
 	PIN = IntegerField('PIN', validators=[DataRequired()])
 	select = SelectField('Field to Change', choices=[('src', 'Source IP'), ('dst', 'Destination IP'),
-							('proto', 'Protocol'), ('seqwindow', 'Sequence Window'),
-							('length', 'Packet Length'), ('payload', 'Payload'),
-							('time', 'Timestamp')])
+							('protocol', 'Protocol'), ('seqwindow', 'Sequence Window'),
+							('len', 'Packet Length'), ('payload', 'Payload'),
+							('packettime', 'Packet Time')])
 	new_val = TextField('New Value', validators=[DataRequired()])
 	submit = SubmitField("Send")
