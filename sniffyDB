@@ -55,7 +55,7 @@ print " "
 print " Opening",
 print sys.argv[1]
 print " "
-filename = "/home/project/sniffydb/pcaps/" + pcap
+filename = "~/sniffydb/pcaps/" + pcap
 pkts = rdpcap(filename)
 
 # Read all packets from pcap file and filter out
