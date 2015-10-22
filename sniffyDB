@@ -89,7 +89,7 @@ for p in pkts:
             packet_data.append(packet_info)
    
     if p.haslayer(ARP):
-        packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": "ARP", "seq-window": "None", "length": p[ARP].plen, "Load": "None"}
+        packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": 54, "seq-window": 0, "length": p[ARP].plen, "Load": "None"}
         packet_data.append(packet_info)
 
 
