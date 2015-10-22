@@ -8,8 +8,6 @@ fi
 
 ./sniffyDB $1
 
-pcap="test"
-head $pcap
-# replace test with pcap.json when everything is ready
+pcap="pcap.json"
 
 ./json2db.py $pcap
