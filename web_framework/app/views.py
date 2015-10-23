@@ -6,6 +6,7 @@ from werkzeug import secure_filename
 import os
 
 __author__ = "Donald Cha"
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 class Database:
 
@@ -190,7 +191,7 @@ def upload():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			os.system("../pcap2db.sh " + filename)
+			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
 
 @app.route('/add')
