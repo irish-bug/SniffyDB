@@ -29,7 +29,7 @@ def connect_database():
     return None
 
 
-def table_clear(database, pcapid, packets):
+def table_clear(database):
     cursor = database.cursor()
 
     cursor.execute('TRUNCATE TABLE Combined;')
@@ -48,7 +48,7 @@ def main(argv):
         exit(1)
 
     # create tables
-    table_clear(db, PcapID, Packets)
+    table_clear(db)
 
 
     # close connection

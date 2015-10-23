@@ -131,6 +131,7 @@ def table_combined(database, pcapid, packets):
 
 
 def main(argv):
+    print "entered json2db.py"
     # load json
     if not argv[0]:
         print 'need json file as the argument'
