@@ -31,11 +31,51 @@ def connect_database():
 
 def table_clear(database):
     cursor = database.cursor()
+    combined = 'Combined'
+    conversation = 'Conversation'
+    packet = 'Packet'
+    pcap = 'Pcap'
 
-    cursor.execute('TRUNCATE TABLE Combined;')
+    cursor.execute('DROP TABLE IF EXISTS Combined, Conversation, Packet, Pcap;')
+    cursor.execute('CREATE TABLE IF NOT EXISTS Pcap ('
+                   'id VARCHAR(255),'
+                   'timegenerated INT,'
+                   'PRIMARY KEY (id)'
+                   ');')
+    cursor.execute('CREATE TABLE IF NOT EXISTS Conversation ('
+                   'pcapid VARCHAR(255),'
+                   'seqwindow INT DEFAULT 0,'
+                   'src VARCHAR(15) DEFAULT NULL,'
+                   'dst VARCHAR(15) DEFAULT NULL,'
+                   'len INT DEFAULT 0,'
+                   'FOREIGN KEY (pcapid) REFERENCES Pcap(id),'
+                   'PRIMARY KEY (pcapid, seqwindow)'
+                   ');')
+    cursor.execute('CREATE TABLE IF NOT EXISTS Packet ('
+                   'pcapid VARCHAR(255),'
+                   'pin INT,'
+#                   'packettime TIMESTAMP(6),'
+                   'packettime VARCHAR(255) NOT NULL,'
+                   'protocol INT DEFAULT -1,'
+                   'payload VARCHAR(2000) DEFAULT NULL,'
+                   'FOREIGN KEY (pcapid) REFERENCES Pcap(id),'
+                   'PRIMARY KEY (pcapid, pin)'
+                   ');')
+    cursor.execute('CREATE TABLE IF NOT EXISTS Combined ('
+                   'pcapid VARCHAR(255),'
+                   'pin INT,'
+                   'packettime VARCHAR(255) NOT NULL,'
+                   'seqwindow INT DEFAULT 0,'
+                   'src VARCHAR(15) DEFAULT NULL,'
+                   'dst VARCHAR(15) DEFAULT NULL,'
+                   'protocol INT DEFAULT -1,'
+                   'len INT DEFAULT 0,'
+                   'payload VARCHAR(2000) DEFAULT NULL,'
+                   'PRIMARY KEY (pcapid, pin)'
+                   ');')
     database.commit()
     cursor.close()
-    print 'Combined table truncated!'
+    print 'All tables truncated!'
 
 
 def main(argv):
