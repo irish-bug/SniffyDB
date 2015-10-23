@@ -62,7 +62,7 @@ def add_page():
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
-				query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+dst+"'", "'"+src+"'", "'"+proto+"'", seqwindow, length, "'"+payload+"'", "'"+time+"'", "'"+PcapID+"'", PIN)
+				query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+PcapID+"'", PIN, "'"+time+"'", seqwindow, "'"+src+"'", "'"+dst+"'", proto, length, "'"+payload+"'")
 				db.execute(query)
 				flash('Data Added.')
 				return redirect('/add_page')
@@ -190,7 +190,7 @@ def upload():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-			os.system("../pcap2db.sh ../../pcaps/" + filename)
+			os.system("../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
 
 @app.route('/add')
