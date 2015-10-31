@@ -3,6 +3,8 @@ from app import app
 from flask.ext.mysqldb import MySQLdb
 from forms import SubmitForm, SearchForm, DeleteForm, EditForm
 from werkzeug import secure_filename
+from flask.json import jsonify
+import json
 import os
 
 __author__ = "Donald Cha"
@@ -35,9 +37,6 @@ class Database:
 	def __del__(self):
 		self.connection.close()
 
-	def close(self):
-		self.connection.close()
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -68,11 +67,9 @@ def add_page():
 				query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+PcapID+"'", PIN, "'"+time+"'", seqwindow, "'"+src+"'", "'"+dst+"'", proto, length, "'"+payload+"'")
 				db.execute(query)
 				flash('Data Added.')
-				db.close()
 				return redirect('/add_page')
 			except:
 				flash('An Error has occured')
-				db.close()
 				return redirect('/index')
 
 	elif request.method == 'GET':
@@ -92,7 +89,6 @@ def view_page():
 			time=row['packettime'],
 			PcapID=row['pcapid'],
 			PIN=row['pin']) for row in cur]
-	db.close()
 	return render_template('view_page.html', entries=entries)
 
 @app.route('/search_page', methods=['GET', 'POST'])
@@ -118,10 +114,8 @@ def search_page():
 				time=row['packettime'],
 				PcapID=row['pcapid'],
 				PIN=row['pin']) for row in cur]
-				db.close()
 				return render_template('search_page.html', form=form, entries=entries)
 			except:
-				db.close()
 				print "Error"
 				return redirect('/search_page')
 
@@ -148,10 +142,8 @@ def delete_page():
 					query = """DELETE FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
 					db.execute(query)
 					flash('Data Deleted.')
-				db.close()
 				return redirect('/delete_page')
 			except:
-				db.close()
 				print "Error"
 				return redirect('/delete_page')
 
@@ -182,10 +174,8 @@ def edit_page():
 					query = """UPDATE Combined SET %s=%s WHERE pcapid=%s AND pin=%d""" %  (choice, new_val, "'"+PcapID+"'", PIN)
 					db.execute(query)
 					flash('Data editted.')
-				db.close()
 				return redirect('/edit_page')
 			except:
-				db.close()
 				print "Error"
 				return redirect('/edit_page')
 
@@ -208,3 +198,19 @@ def upload():
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
+
+# Route that will process the file upload
+@app.route('/PCAP', methods=['GET'])
+def pcap():
+	db = Database()
+	cur = db.query("""SELECT * FROM Combined""")
+	entries = [dict(dst=row['dst'],
+			src=row['src'],
+			proto=row['protocol'],
+			seqwindow=row['seqwindow'],
+			length=row['len'],
+			payload=row['payload'],
+			time=row['packettime'],
+			PcapID=row['pcapid'],
+			PIN=row['pin']) for row in cur]
+	return json.dumps(entries)

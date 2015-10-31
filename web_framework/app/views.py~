@@ -3,6 +3,8 @@ from app import app
 from flask.ext.mysqldb import MySQLdb
 from forms import SubmitForm, SearchForm, DeleteForm, EditForm
 from werkzeug import secure_filename
+from flask.json import jsonify
+import json
 import os
 
 __author__ = "Donald Cha"
@@ -35,8 +37,6 @@ class Database:
 	def __del__(self):
 		self.connection.close()
 
-db = Database()
-
 @app.route('/')
 @app.route('/index')
 def index():
@@ -53,6 +53,7 @@ def add_page():
 			flash('All fields are required.')
 			return render_template('add_page.html', form=form)
 		else:
+			db = Database()
 			dst = form.dst.data
 			src = form.src.data
 			proto = form.proto.data
@@ -77,6 +78,7 @@ def add_page():
 
 @app.route('/view_page', methods=['GET'])
 def view_page():
+	db = Database()
 	cur = db.query("""SELECT * FROM Combined""")
 	entries = [dict(dst=row['dst'],
 			src=row['src'],
@@ -97,6 +99,7 @@ def search_page():
 			flash('All fields are required.')
 			return render_template('search_page.html', form=form)
 		else:
+			db = Database()
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
@@ -127,6 +130,7 @@ def delete_page():
 			flash('All fields are required.')
 			return render_template('delete_page.html', form=form)
 		else:
+			db = Database()
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
@@ -154,11 +158,12 @@ def edit_page():
 			flash('All fields are required.')
 			return render_template('edit_page.html', form=form)
 		else:
+			db = Database()
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			choice = form.select.data
 			new_val = form.new_val.data
-			if not (choice == 'seqwindow' or choice == 'len' or choie == 'protocol'):
+			if not (choice == 'seqwindow' or choice == 'len' or choice == 'protocol'):
 				new_val = "'"+new_val+"'"
 			try:
 				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
@@ -194,12 +199,18 @@ def upload():
 			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
 
-@app.route('/add')
-def add():
-	try:
-		query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'1'", "'1'", "'1'", 1, 1, "'1'", "'1'", "'1'", 1)
-		db.execute(query)
-		return redirect('/index')
-	except:
-		print "HI"
-		return redirect('/index')
+# Route that will process the file upload
+@app.route('/PCAP', methods=['GET'])
+def pcap():
+	db = Database()
+	cur = db.query("""SELECT * FROM Combined""")
+	entries = [dict(dst=row['dst'],
+			src=row['src'],
+			proto=row['protocol'],
+			seqwindow=row['seqwindow'],
+			length=row['len'],
+			payload=row['payload'],
+			time=row['packettime'],
+			PcapID=row['pcapid'],
+			PIN=row['pin']) for row in cur]
+	return json.dumps(entries)
