@@ -35,7 +35,8 @@ class Database:
 	def __del__(self):
 		self.connection.close()
 
-db = Database()
+	def close(self):
+		self.connection.close()
 
 @app.route('/')
 @app.route('/index')
@@ -53,6 +54,7 @@ def add_page():
 			flash('All fields are required.')
 			return render_template('add_page.html', form=form)
 		else:
+			db = Database()
 			dst = form.dst.data
 			src = form.src.data
 			proto = form.proto.data
@@ -66,9 +68,11 @@ def add_page():
 				query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+PcapID+"'", PIN, "'"+time+"'", seqwindow, "'"+src+"'", "'"+dst+"'", proto, length, "'"+payload+"'")
 				db.execute(query)
 				flash('Data Added.')
+				db.close()
 				return redirect('/add_page')
 			except:
 				flash('An Error has occured')
+				db.close()
 				return redirect('/index')
 
 	elif request.method == 'GET':
@@ -77,6 +81,7 @@ def add_page():
 
 @app.route('/view_page', methods=['GET'])
 def view_page():
+	db = Database()
 	cur = db.query("""SELECT * FROM Combined""")
 	entries = [dict(dst=row['dst'],
 			src=row['src'],
@@ -87,6 +92,7 @@ def view_page():
 			time=row['packettime'],
 			PcapID=row['pcapid'],
 			PIN=row['pin']) for row in cur]
+	db.close()
 	return render_template('view_page.html', entries=entries)
 
 @app.route('/search_page', methods=['GET', 'POST'])
@@ -97,6 +103,7 @@ def search_page():
 			flash('All fields are required.')
 			return render_template('search_page.html', form=form)
 		else:
+			db = Database()
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
@@ -111,8 +118,10 @@ def search_page():
 				time=row['packettime'],
 				PcapID=row['pcapid'],
 				PIN=row['pin']) for row in cur]
+				db.close()
 				return render_template('search_page.html', form=form, entries=entries)
 			except:
+				db.close()
 				print "Error"
 				return redirect('/search_page')
 
@@ -127,6 +136,7 @@ def delete_page():
 			flash('All fields are required.')
 			return render_template('delete_page.html', form=form)
 		else:
+			db = Database()
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			try:
@@ -138,8 +148,10 @@ def delete_page():
 					query = """DELETE FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
 					db.execute(query)
 					flash('Data Deleted.')
+				db.close()
 				return redirect('/delete_page')
 			except:
+				db.close()
 				print "Error"
 				return redirect('/delete_page')
 
@@ -154,6 +166,7 @@ def edit_page():
 			flash('All fields are required.')
 			return render_template('edit_page.html', form=form)
 		else:
+			db = Database()
 			PcapID = form.PcapID.data
 			PIN = form.PIN.data
 			choice = form.select.data
@@ -169,8 +182,10 @@ def edit_page():
 					query = """UPDATE Combined SET %s=%s WHERE pcapid=%s AND pin=%d""" %  (choice, new_val, "'"+PcapID+"'", PIN)
 					db.execute(query)
 					flash('Data editted.')
+				db.close()
 				return redirect('/edit_page')
 			except:
+				db.close()
 				print "Error"
 				return redirect('/edit_page')
 
@@ -193,13 +208,3 @@ def upload():
 			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
-
-@app.route('/add')
-def add():
-	try:
-		query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'1'", "'1'", "'1'", 1, 1, "'1'", "'1'", "'1'", 1)
-		db.execute(query)
-		return redirect('/index')
-	except:
-		print "HI"
-		return redirect('/index')
