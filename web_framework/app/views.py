@@ -158,7 +158,7 @@ def edit_page():
 			PIN = form.PIN.data
 			choice = form.select.data
 			new_val = form.new_val.data
-			if not (choice == 'seqwindow' or choice == 'len' or choie == 'protocol'):
+			if not (choice == 'seqwindow' or choice == 'len' or choice == 'protocol'):
 				new_val = "'"+new_val+"'"
 			try:
 				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)

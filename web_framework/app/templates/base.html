@@ -1,5 +1,20 @@
 <html>
+
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+
 <head>
+	<ul class="nav nav-tabs">
+  		<a class="navbar-brand" href="/index">SniffyDB</a>
+		<!--<li role="presentation"><a href="/index">Home</a></li>-->
+  		<li role="presentation"><a href="/add_page">Add Data</a></li>
+  		<li role="presentation"><a href="/view_page">View Data</a></li>
+		<li role="presentation"><a href="/search_page">Search Data</a></li>
+		<li role="presentation"><a href="/edit_page">Edit Data</a></li>
+		<li role="presentation"><a href="/delete_page">Delete Data</a></li>
+		<li role="presentation"><a href="/upload">Upload PCAP</a></li>
+	</ul>
+
     {% if title %}
     <title>{{ title }} - SniffyDB</title>
     {% else %}
@@ -7,13 +22,15 @@
     {% endif %}
   </head>
   <body>
-    <div>SniffyDB: <a href="/index">Home</a></div>
+    <!--
+	<div>SniffyDB: <a href="/index">Home</a></div>
     <div>SniffyDB: <a href="/add_page">Add Data</a></div>
     <div>SniffyDB: <a href="/view_page">View Data</a></div>
     <div>SniffyDB: <a href="/search_page">Search Data</a></div>
     <div>SniffyDB: <a href="/edit_page">Edit Data</a></div>
     <div>SniffyDB: <a href="/delete_page">Delete Data</a></div>
     <div>SniffyDB: <a href="/upload">Upload PCAP</a></div>
-    {% block content %}{% endblock %}
+    -->
+	{% block content %}{% endblock %}
   </body>
 </html>
