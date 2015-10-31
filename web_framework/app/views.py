@@ -214,3 +214,9 @@ def pcap():
 			PcapID=row['pcapid'],
 			PIN=row['pin']) for row in cur]
 	return json.dumps(entries)
+
+# Route that will process the file upload
+@app.route('/CLEAR', methods=['GET'])
+def clear_table():
+	os.system(basedir+"/../../clear_table.py")
+	return redirect('/index')
