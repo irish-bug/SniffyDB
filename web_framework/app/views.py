@@ -199,7 +199,7 @@ def upload():
 			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
 
-# Route that will process the file upload
+# Route that will get all entries from mysql database
 @app.route('/PCAP', methods=['GET'])
 def pcap():
 	db = Database()
@@ -215,7 +215,25 @@ def pcap():
 			PIN=row['pin']) for row in cur]
 	return json.dumps(entries)
 
-# Route that will process the file upload
+# Route that will return all IP addresses from mysql database
+@app.route('/SHOWIP', methods=['GET'])
+def showip():
+	db = Database()
+	cur = db.query("""SELECT DISTINCT(src) FROM Combined""")
+	entries = [dict(src=row['src']) for row in cur]
+	return json.dumps(entries)
+
+# Route that will return all IP addresses that a given IP address communicated
+@app.route('/COMMUNICATE', methods=['GET'])
+def show_communicate():
+	ip_address = request.args['ip']
+	db = Database()
+	query_val = """SELECT DISTINCT dst, protocol FROM Combined WHERE src = %s""" % ("'"+ip_address+"'")
+	cur = db.query(query_val) 
+	entries = [dict(dst=row['dst'], proto=row['protocol']) for row in cur]
+	return json.dumps(entries)
+
+# Route that will clear the data table in mysql database
 @app.route('/CLEAR', methods=['GET'])
 def clear_table():
 	os.system(basedir+"/../../clear_table.py")
