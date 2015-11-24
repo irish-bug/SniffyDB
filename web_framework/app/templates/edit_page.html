@@ -1,26 +1,30 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Edit Data</h1>
+<h1>Edit Tag</h1>
 
 {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
 {% endfor %}
-<form action="" method="post" name="edit data">
+<form action="" method="post" name="add data">
     {{ form.hidden_tag() }}
 
-    {{ form.PcapID.label }}
-    {{ form.PcapID }}
+    {{ form.tag.label }}
+    {{ form.tag }}
 
-    {{ form.PIN.label }}
-    {{ form.PIN }}
-
-    {{ form.select }}
-
-    {{ form.new_val.label }}
-    {{ form.new_val }}
-	
+    {{ form.type_val }}
 
     {{ form.submit }}
 </form>
+
+<script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+
+<input type="button" onclick="redirect()" value="Delete">
+<script type="text/javascript">
+function redirect() {
+	var cur = window.location.search;
+	var url_string = "/delete_page"+cur;
+	window.location.replace(url_string);
+}
+</script>
 {% endblock %}

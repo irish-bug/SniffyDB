@@ -1,7 +1,7 @@
 from flask import render_template, flash, redirect, request
 from app import app
 from flask.ext.mysqldb import MySQLdb
-from forms import SubmitForm, SearchForm, DeleteForm, EditForm
+from forms import PacketForm, TagForm, PacketCaptureForm
 from werkzeug import secure_filename
 from flask.json import jsonify
 import json
@@ -43,148 +43,119 @@ def index():
 	user = {'nickname': 'Network Admin'}
 	return render_template('index.html', title='Home', user=user)
 
-
 @app.route('/data_viz')
 def data_viz():
 	return render_template('data_viz.html', title="Data Viz")
 
-
 @app.route('/add_page', methods=['GET', 'POST'])
 def add_page():
-	form = SubmitForm()
+	form = TagForm()
+	pcapid = request.args['pcapid']
+	pin = request.args['pin']
+
 	if request.method == 'POST':
 		if form.validate() == False:
 			flash('All fields are required.')
 			return render_template('add_page.html', form=form)
 		else:
 			db = Database()
-			dst = form.dst.data
-			src = form.src.data
-			proto = form.proto.data
-			seqwindow = form.seqwindow.data
-			length = form.length.data
-			payload = form.payload.data
-			time = form.time.data
-			PcapID = form.PcapID.data
-			PIN = form.PIN.data
+			tag = form.tag.data
+			type_val = form.type_val.data
 			try:
-				query = """INSERT INTO Combined values (%s, %s, %s, %s, %s, %s, %s, %s, %s)""" %  ("'"+PcapID+"'", PIN, "'"+time+"'", seqwindow, "'"+src+"'", "'"+dst+"'", proto, length, "'"+payload+"'")
+				query = """INSERT INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
+				db.execute(query)
+				print query
+				query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
+				cur = db.query(query)
+				print query
+				query = """INSERT INTO Tagged (pcapid, pin, tagid) VALUES (%s, %s, %s)""" %  ("'"+pcapid+"'", pin, cur[0]['tagid'])
+
 				db.execute(query)
 				flash('Data Added.')
-				return redirect('/add_page')
+				return redirect('/view_page')
 			except:
 				flash('An Error has occured')
-				return redirect('/index')
+				return render_template('add_page.html', form=form)
 
 	elif request.method == 'GET':
 		return render_template('add_page.html', form=form)
 
-
-@app.route('/view_page', methods=['GET'])
-def view_page():
-	db = Database()
-	cur = db.query("""SELECT * FROM Combined""")
-	entries = [dict(dst=row['dst'],
-			src=row['src'],
-			proto=row['protocol'],
-			seqwindow=row['seqwindow'],
-			length=row['len'],
-			payload=row['payload'],
-			time=row['packettime'],
-			PcapID=row['pcapid'],
-			PIN=row['pin']) for row in cur]
-	return render_template('view_page.html', entries=entries)
-
-@app.route('/search_page', methods=['GET', 'POST'])
-def search_page():
-	form = SearchForm()
-	if request.method == 'POST':
-		if form.validate() == False:
-			flash('All fields are required.')
-			return render_template('search_page.html', form=form)
-		else:
-			db = Database()
-			PcapID = form.PcapID.data
-			PIN = form.PIN.data
-			try:
-				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
-				cur = db.query(query)
-				entries = [dict(dst=row['dst'],
-				src=row['src'],
-				proto=row['protocol'],
-				seqwindow=row['seqwindow'],
-				length=row['len'],
-				payload=row['payload'],
-				time=row['packettime'],
-				PcapID=row['pcapid'],
-				PIN=row['pin']) for row in cur]
-				return render_template('search_page.html', form=form, entries=entries)
-			except:
-				print "Error"
-				return redirect('/search_page')
-
-	elif request.method == 'GET':
-		return render_template('search_page.html', form=form, entries=None)
-
-@app.route('/delete_page', methods=['GET', 'POST'])
-def delete_page():
-	form = DeleteForm()
-	if request.method == 'POST':
-		if form.validate() == False:
-			flash('All fields are required.')
-			return render_template('delete_page.html', form=form)
-		else:
-			db = Database()
-			PcapID = form.PcapID.data
-			PIN = form.PIN.data
-			try:
-				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
-				cur = db.query(query)
-				if len(cur) == 0:
-					flash('Data does not exist')
-				else:
-					query = """DELETE FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
-					db.execute(query)
-					flash('Data Deleted.')
-				return redirect('/delete_page')
-			except:
-				print "Error"
-				return redirect('/delete_page')
-
-	elif request.method == 'GET':
-		return render_template('delete_page.html', form=form)
-
 @app.route('/edit_page', methods=['GET', 'POST'])
 def edit_page():
-	form = EditForm()
+	form = TagForm()
+	pcapid = request.args['pcapid']
+	pin = request.args['pin']
+
 	if request.method == 'POST':
 		if form.validate() == False:
 			flash('All fields are required.')
 			return render_template('edit_page.html', form=form)
 		else:
 			db = Database()
-			PcapID = form.PcapID.data
-			PIN = form.PIN.data
-			choice = form.select.data
-			new_val = form.new_val.data
-			if not (choice == 'seqwindow' or choice == 'len' or choice == 'protocol'):
-				new_val = "'"+new_val+"'"
+			tag = form.tag.data
+			type_val = form.type_val.data
 			try:
-				query = """SELECT * FROM Combined WHERE pcapid=%s AND pin=%d""" %  ("'"+PcapID+"'", PIN)
+				query = """SELECT tagid FROM Tagged WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin)
 				cur = db.query(query)
 				if len(cur) == 0:
 					flash('Data does not exist')
 				else:
-					query = """UPDATE Combined SET %s=%s WHERE pcapid=%s AND pin=%d""" %  (choice, new_val, "'"+PcapID+"'", PIN)
+					query = """UPDATE Tag SET tag=%s, type=%s WHERE tagid=%s""" %  ("'"+tag+"'", "'"+type_val+"'", cur[0]['tagid'])
 					db.execute(query)
 					flash('Data editted.')
-				return redirect('/edit_page')
+
+				return redirect('/view_page')
 			except:
-				print "Error"
-				return redirect('/edit_page')
+				flash('An Error has occured')
+				return render_template('edit_page.html', form=form)
 
 	elif request.method == 'GET':
 		return render_template('edit_page.html', form=form)
+
+@app.route('/delete_page', methods=['GET', 'POST'])
+def delete_page():
+	form = TagForm()
+	pcapid = request.args['pcapid']
+	pin = request.args['pin']
+	db = Database()
+
+	try:
+		query = """SELECT tagid FROM Tagged WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin)
+		cur = db.query(query)
+		if len(cur) == 0:
+			return redirect('/view_page')
+		else:
+			query = """DELETE FROM Tag WHERE tagid=%s""" %  (cur[0]['tagid'])
+			db.execute(query)
+			query = """DELETE FROM Tagged WHERE tagid=%s""" %  (cur[0]['tagid'])
+			db.execute(query)
+	except:
+		flash('An Error has occured')
+		return render_template('edit_page.html', form=form)
+
+	return redirect('/view_page')
+
+@app.route('/view_page', methods=['GET'])
+def view_page():
+	db = Database()
+	cur = db.query("""SELECT dst, src, protocol, packettime, pin, pcapid FROM Packet""")
+	entries = []
+	
+	for row in cur:
+		temp = dict(dst=row['dst'],
+			src=row['src'],
+			protocol=row['protocol'],
+			pcapid=row['pcapid'],
+			packettime=row['packettime'],
+			PIN=row['pin'])
+		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])		
+		new_cur = db.query(tag_query)
+		if len(new_cur) == 0:
+			temp['tag'] = ''
+		else:
+			temp['tag'] = new_cur[0]['tag']
+		entries.append(temp)
+	return render_template('view_page.html', entries=entries)
 
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):
@@ -207,11 +178,10 @@ def upload():
 @app.route('/PCAP', methods=['GET'])
 def pcap():
 	db = Database()
-	cur = db.query("""SELECT * FROM Combined""")
+	cur = db.query("""SELECT * FROM Packet""")
 	entries = [dict(dst=row['dst'],
 			src=row['src'],
 			proto=row['protocol'],
-			seqwindow=row['seqwindow'],
 			length=row['len'],
 			payload=row['payload'],
 			time=row['packettime'],
@@ -223,7 +193,7 @@ def pcap():
 @app.route('/SHOWIP', methods=['GET'])
 def showip():
 	db = Database()
-	cur = db.query("""SELECT DISTINCT(src) FROM Combined""")
+	cur = db.query("""SELECT DISTINCT(src) FROM Packet""")
 	entries = [dict(src=row['src']) for row in cur]
 	return json.dumps(entries)
 
@@ -232,7 +202,7 @@ def showip():
 def show_communicate():
 	ip_address = request.args['ip']
 	db = Database()
-	query_val = """SELECT DISTINCT dst, protocol FROM Combined WHERE src = %s""" % ("'"+ip_address+"'")
+	query_val = """SELECT DISTINCT dst, protocol FROM Packet WHERE src = %s""" % ("'"+ip_address+"'")
 	cur = db.query(query_val) 
 	entries = [dict(dst=row['dst'], proto=row['protocol']) for row in cur]
 	return json.dumps(entries)
@@ -240,5 +210,8 @@ def show_communicate():
 # Route that will clear the data table in mysql database
 @app.route('/CLEAR', methods=['GET'])
 def clear_table():
-	os.system(basedir+"/../../clear_table.py")
+	db = Database()
+	query_val = """DELETE FROM Packet WHERE (pcapid, pin) NOT IN (SELECT T.pcapid, T.pin FROM Tagged T)"""
+	db.execute(query_val) 
 	return redirect('/index')
+
