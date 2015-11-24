@@ -59,7 +59,7 @@ def main(argv):
 
     # save pcapid for later use
 
-    if not pcap['PcapId'] or not pcap['packets']:
+    if not pcap['PcapID'] or not pcap['packets']:
         print('input is in unexpected format')
         exit(1)
 
