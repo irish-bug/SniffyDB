@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>Add Data</h1>
+<h1>Add Tag</h1>
 
 {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
@@ -9,32 +9,10 @@
 <form action="" method="post" name="add data">
     {{ form.hidden_tag() }}
 
-    {{ form.src.label }}
-    {{ form.src }}
+    {{ form.tag.label }}
+    {{ form.tag }}
 
-    {{ form.dst.label }}
-    {{ form.dst }}
-
-    {{ form.proto.label }}
-    {{ form.proto }}
-
-    {{ form.seqwindow.label }}
-    {{ form.seqwindow }}
-
-    {{ form.length.label }}
-    {{ form.length }}
-
-    {{ form.payload.label }}
-    {{ form.payload }}
-
-    {{ form.time.label }}
-    {{ form.time }}
-
-    {{ form.PcapID.label }}
-    {{ form.PcapID }}
-
-    {{ form.PIN.label }}
-    {{ form.PIN }}
+    {{ form.type_val }}
 
     {{ form.submit }}
 </form>
