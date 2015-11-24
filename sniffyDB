@@ -77,20 +77,20 @@ for p in pkts:
     if p.haslayer(IP):
         if p.haslayer(Raw):
             try:
-                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": base64.urlsafe_b64encode(p[Raw].load)}
+                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": base64.urlsafe_b64encode(p[Raw].load)}
                 json.dump(packet_info, _test, sort_keys=True, indent=4, separators=(',', ': '))
                 packet_data.append(packet_info)
 
             except:
-                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "Invalid data"}
+                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": "Invalid data"}
                 packet_data.append(packet_info)
 
         else:
-            packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "seq-window": p[IP].id, "length": p[IP].len, "Load": "None"}        
+            packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": "None"}        
             packet_data.append(packet_info)
    
     if p.haslayer(ARP):
-        packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": 54, "seq-window": 0, "length": p[ARP].plen, "Load": "None"}
+        packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[ARP].psrc, "dest": p[ARP].pdst, "protocol": 54, "length": p[ARP].plen, "Load": "None"}
         packet_data.append(packet_info)
 
 
