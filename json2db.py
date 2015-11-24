@@ -38,12 +38,22 @@ def auto_tag(cursor, pcapid, packet):
 
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT Tagged.tagid, %s, %s " \
-          "FROM Tagged, Packet " \
-          "WHERE Tagged.pin = Packet.pin " \
+          "FROM Tag, Tagged, Packet " \
+          "WHERE Packet.pcapid != %s " \
+          "AND Tag.type = 'src' " \
+          "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
-          "AND (Packet.src = %s OR Packet.dst = %s)"
-    cursor.execute(sql, (pcapid, pin, dst, dst))
-    cursor.execute(sql, (pcapid, pin, src, src))
+          "AND (Packet.src = %s OR Packet.src = %s)"
+    cursor.execute(sql, (pcapid, pin, pcapid, src, dst))
+    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
+          "SELECT Tagged.tagid, %s, %s " \
+          "FROM Tag, Tagged, Packet " \
+          "WHERE Packet.pcapid != %s " \
+          "AND Tag.type = 'dst' " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND Tagged.pcapid = Packet.pcapid " \
+          "AND (Packet.dst = %s OR Packet.dst = %s)"
+    cursor.execute(sql, (pcapid, pin, pcapid, src, dst))
     print('new packet tagged!!')
 
 
@@ -59,7 +69,7 @@ def main(argv):
 
     # save pcapid for later use
 
-    if not pcap['PcapID'] or not pcap['packets']:
+    if not pcap['PcapID'] or not pcap['Packets']:
         print('input is in unexpected format')
         exit(1)
 
