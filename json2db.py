@@ -12,7 +12,7 @@ def add_pcap(connection, pcap):
         # new pcap entry. ignore if the primary key already exists.
         sql = "INSERT IGNORE INTO Pcap (pcapid, pcaptime)" \
               "VALUES (%s, %s)"
-        cursor.execute(sql, (pcap['id'], pcap['time']))
+        cursor.execute(sql, (pcap['pcapid'], pcap['pcaptime']))
     connection.commit()
     print('new pcap added!')
 
@@ -58,13 +58,15 @@ def main(argv):
     pcap = json.load(open(argv[0]))
 
     # save pcapid for later use
-    pcapid = pcap['PcapID']
 
-    packets = pcap['Packets']
-
-    if not pcapid or not packets:
+    if not pcap['PcapId'] or not pcap['packets']:
         print('input is in unexpected format')
         exit(1)
+
+    p = {}
+    p['pcapid'] = pcap['PcapID']
+    packets = pcap['Packets']
+    p['pcaptime'] = packets[0]['time']
 
     # connect to db
     connection = init_db.connect_database()
@@ -79,8 +81,8 @@ def main(argv):
     init_db.create_tagged(connection)
 
     # create tables
-    add_pcap(connection, pcapid)
-    add_packet(connection, pcapid, packets)
+    add_pcap(connection, p)
+    add_packet(connection, p['pcapid'], packets)
 
     # close connection
     connection.close()
