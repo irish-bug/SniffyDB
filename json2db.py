@@ -1,166 +1,101 @@
 #!/usr/bin/python
-import MySQLdb
 import json
 import sys
+import init_db
 
 
 __author__ = 'SimonSK'
 
 
-dialect = 'mysql'
-user = 'sniffydb_dev'
-passwd = 'sniffy+DB'
-server = '127.0.0.1'
-database = 'sniffydb_main'
+def add_pcap(connection, pcap):
+    with connection.cursor() as cursor:
+        # new pcap entry. ignore if the primary key already exists.
+        sql = "INSERT IGNORE INTO Pcap (pcapid, pcaptime)" \
+              "VALUES (%s, %s)"
+        cursor.execute(sql, (pcap['pcapid'], pcap['pcaptime']))
+    connection.commit()
+    print('new pcap added!')
 
 
-def connect_database():
-    try:
-        db = MySQLdb.connect(server, user, passwd, database)
-        cursor = db.cursor()
-        cursor.execute("SELECT VERSION()")
-        results = cursor.fetchone()
-        # Check if anything at all is returned
-        if not results:
-            print 'seems connected, but there is nothing in it'
-        return db
-    except MySQLdb.Error:
-        print 'could not connect to the database'
-    return None
+def add_packet(connection, pcapid, packets):
+    with connection.cursor() as cursor:
+        # Insert a row for every packet. ignore if the primary key already exists.
+        for packet in packets:
+            sql = "INSERT IGNORE INTO Packet (pcapid, pin, packettime, src, dst, protocol, len, payload)" \
+                  "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
+            cursor.execute(sql, (pcapid, packet['PIN'], packet['time'], packet['src'], packet['dest'],
+                                 packet['protocol'], packet['length'], packet['Load'])
+                           )
+            auto_tag(cursor, pcapid, packet)
+    connection.commit()
+    print('new packets added!')
 
 
-def table_pcap(database, pcapid):
-    cursor = database.cursor()
+def auto_tag(cursor, pcapid, packet):
+    pin = packet['PIN']
+    dst = packet['dest']
+    src = packet['src']
 
-    # create a new table if not already exists
-    cursor.execute('CREATE TABLE IF NOT EXISTS Pcap ('
-                   'id VARCHAR(255),'
-                   'timegenerated INT,'
-                   'PRIMARY KEY (id)'
-                   ');')
-    database.commit()
-
-    # Insert a row for every packet. ignore if the primary key already exists.
-    cursor.execute('INSERT IGNORE INTO Pcap (id, timegenerated)'
-                   'values (%s, %s);',
-                   (pcapid, None))
-    database.commit()
-    cursor.close()
-    print 'Pcap table updated!'
-
-
-def table_conversation(database, pcapid, packets):
-    cursor = database.cursor()
-
-    # create a new table if not already exists
-    cursor.execute('CREATE TABLE IF NOT EXISTS Conversation ('
-                   'pcapid VARCHAR(255),'
-                   'seqwindow INT DEFAULT 0,'
-                   'src VARCHAR(15) DEFAULT NULL,'
-                   'dst VARCHAR(15) DEFAULT NULL,'
-                   'len INT DEFAULT 0,'
-                   'FOREIGN KEY (pcapid) REFERENCES Pcap(id),'
-                   'PRIMARY KEY (pcapid, seqwindow)'
-                   ');')
-    database.commit()
-
-    # Insert a row for every packet. ignore if the primary key already exists.
-    for packet in packets:
-        cursor.execute('INSERT IGNORE INTO Conversation (pcapid, seqwindow, src, dst, len)'
-                       'VALUES (%s, %s, %s, %s, %s);',
-                       (pcapid, packet['seq-window'], packet['src'], packet['dest'], packet['length']))
-        database.commit()
-    cursor.close()
-    print 'Conversation table updated!'
-
-
-def table_packet(database, pcapid, packets):
-    cursor = database.cursor()
-
-    # create a new table if not already exists
-    cursor.execute('CREATE TABLE IF NOT EXISTS Packet ('
-                   'pcapid VARCHAR(255),'
-                   'pin INT,'
-#                   'packettime TIMESTAMP(6),'
-                   'packettime VARCHAR(255) NOT NULL,'
-                   'protocol INT DEFAULT -1,'
-                   'payload VARCHAR(2000) DEFAULT NULL,'
-                   'FOREIGN KEY (pcapid) REFERENCES Pcap(id),'
-                   'PRIMARY KEY (pcapid, pin)'
-                   ');')
-    database.commit()
-
-    # Insert a row for every packet. ignore if the primary key already exists.
-    for packet in packets:
-        cursor.execute('INSERT IGNORE INTO Packet (pcapid, pin, packettime, protocol, payload)'
-#                       'VALUES (%s, %s, FROM_UNIXTIME(%s), %s, %s);',
-                       'VALUES (%s, %s, %s, %s, %s);',
-                       (pcapid, packet['PIN'], packet['time'], packet['protocol'], packet['Load']))
-        database.commit()
-    cursor.close()
-    print 'Packet table updated!'
-
-
-def table_combined(database, pcapid, packets):
-    cursor = database.cursor()
-
-    # create a new table if not already exists
-    cursor.execute('CREATE TABLE IF NOT EXISTS Combined ('
-                   'pcapid VARCHAR(255),'
-                   'pin INT,'
-                   'packettime VARCHAR(255) NOT NULL,'
-                   'seqwindow INT DEFAULT 0,'
-                   'src VARCHAR(15) DEFAULT NULL,'
-                   'dst VARCHAR(15) DEFAULT NULL,'
-                   'protocol INT DEFAULT -1,'
-                   'len INT DEFAULT 0,'
-                   'payload VARCHAR(2000) DEFAULT NULL,'
-                   'PRIMARY KEY (pcapid, pin)'
-                   ');')
-    database.commit()
-
-    # Insert a row for every packet. ignore if the primary key already exists.
-    for packet in packets:
-    #    print str(packet['PIN'])+'------------'+packet['Load'] # for debuggin payload display issue
-        cursor.execute('INSERT IGNORE INTO Combined (pcapid, pin, packettime, seqwindow, src, dst, protocol, len, payload)'
-                       'VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);',
-                       (pcapid, packet['PIN'], packet['time'], packet['seq-window'], packet['src'], packet['dest'], packet['protocol'], packet['length'], packet['Load']))
-        database.commit()
-    cursor.close()
-    print 'Combined table updated!'
+    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
+          "SELECT Tagged.tagid, %s, %s " \
+          "FROM Tag, Tagged, Packet " \
+          "WHERE Packet.pcapid != %s " \
+          "AND Tag.type = 'src' " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND Tagged.pcapid = Packet.pcapid " \
+          "AND (Packet.src = %s OR Packet.src = %s)"
+    cursor.execute(sql, (pcapid, pin, pcapid, src, dst))
+    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
+          "SELECT Tagged.tagid, %s, %s " \
+          "FROM Tag, Tagged, Packet " \
+          "WHERE Packet.pcapid != %s " \
+          "AND Tag.type = 'dst' " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND Tagged.pcapid = Packet.pcapid " \
+          "AND (Packet.dst = %s OR Packet.dst = %s)"
+    cursor.execute(sql, (pcapid, pin, pcapid, src, dst))
+    print('new packet tagged!!')
 
 
 def main(argv):
-    print "entered json2db.py"
-    # load json
+    print("begin importing json to database")
+
     if not argv[0]:
-        print 'need json file as the argument'
+        print('need json file as the argument')
         exit(1)
+
+    # load json
     pcap = json.load(open(argv[0]))
 
     # save pcapid for later use
-    PcapID = pcap['PcapID']
 
-    Packets = pcap['Packets']
-
-    if not PcapID or not Packets:
-        print 'input is in unexpected format'
+    if not pcap['PcapID'] or not pcap['Packets']:
+        print('input is in unexpected format')
         exit(1)
+
+    p = {}
+    p['pcapid'] = pcap['PcapID']
+    packets = pcap['Packets']
+    p['pcaptime'] = packets[0]['time']
 
     # connect to db
-    db = connect_database()
-    if not db:
-        print 'database connection failed!'
+    connection = init_db.connect_database()
+    if not connection:
+        print('database connection failed!')
         exit(1)
 
+    # check tables
+    init_db.create_pcap(connection)
+    init_db.create_packet(connection)
+    init_db.create_tag(connection)
+    init_db.create_tagged(connection)
+
     # create tables
-    table_combined(db, PcapID, Packets)
-    table_pcap(db, PcapID)
-    table_conversation(db, PcapID, Packets)
-    table_packet(db, PcapID, Packets)
+    add_pcap(connection, p)
+    add_packet(connection, p['pcapid'], packets)
 
     # close connection
-    db.close()
+    connection.close()
 
 
 if __name__ == "__main__":

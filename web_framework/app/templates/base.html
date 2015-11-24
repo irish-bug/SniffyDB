@@ -1,9 +1,13 @@
 <html>
 
-<!-- Latest compiled and minified CSS -->
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 
-<head>
+ 	<!-- d3JS source script -->
+	<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<!-- JQuery source -->
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+	
 	<ul class="nav nav-tabs">
   		<a class="navbar-brand" href="/index">SniffyDB</a>
 		<!--<li role="presentation"><a href="/index">Home</a></li>-->
@@ -14,6 +18,7 @@
 		<li role="presentation"><a href="/delete_page">Delete Data</a></li>
 		<li role="presentation"><a href="/upload">Upload PCAP</a></li>
                 <li role="presentation"><a href="/CLEAR">Clear Table</a></li>
+		<li role="presentation"><a href="/data_viz">Data Viz</a></li>
 	</ul>
 
     {% if title %}
@@ -34,4 +39,5 @@
     -->
 	{% block content %}{% endblock %}
   </body>
+
 </html>

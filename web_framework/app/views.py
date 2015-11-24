@@ -44,6 +44,10 @@ def index():
 	return render_template('index.html', title='Home', user=user)
 
 
+@app.route('/data_viz')
+def data_viz():
+	return render_template('data_viz.html', title="Data Viz")
+
 
 @app.route('/add_page', methods=['GET', 'POST'])
 def add_page():
