@@ -79,9 +79,9 @@ def create_tag(connection):
         # create a new table if not already exists
         sql = "CREATE TABLE IF NOT EXISTS Tag (" \
               "tagid INT NOT NULL AUTO_INCREMENT," \
-              "tag VARCHAR(255) NOT NULL," \
-              "type VARCHAR(3) DEFAULT 'SRC'," \
-              "PRIMARY KEY (tagid)" \
+              "tagname VARCHAR(255) UNIQUE NOT NULL," \
+              "ip VARCHAR(15) UNIQUE NOT NULL," \
+              "PRIMARY KEY (tagid)," \
               ")"
         cursor.execute(sql)
     connection.commit()
@@ -105,7 +105,7 @@ def create_tagged(connection):
     print('Tagged table created!')
 
 
-def main(argv):
+def main():
     print("begin initializing tables")
 
     # connect to db
@@ -128,4 +128,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    main()

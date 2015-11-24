@@ -26,13 +26,25 @@ def add_packet(connection, pcapid, packets):
             cursor.execute(sql, (pcapid, packet['PIN'], packet['time'], packet['src'], packet['dest'],
                                  packet['protocol'], packet['length'], packet['Load'])
                            )
+            auto_tag(cursor, pcapid, packet)
     connection.commit()
     print('new packets added!')
 
 
-def apply_tag(database, pcapid, packets):
-    cursor = database.cursor()
-    print('Combined table updated!')
+def auto_tag(cursor, pcapid, packet):
+    pin = packet['PIN']
+    dst = packet['dest']
+    src = packet['src']
+
+    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
+          "SELECT Tagged.tagid, %s, %s " \
+          "FROM Tagged, Packet " \
+          "WHERE Tagged.pin = Packet.pin " \
+          "AND Tagged.pcapid = Packet.pcapid " \
+          "AND (Packet.src = %s OR Packet.dst = %s)"
+    cursor.execute(sql, (pcapid, pin, dst, dst))
+    cursor.execute(sql, (pcapid, pin, src, src))
+    print('new packet tagged!!')
 
 
 def main(argv):
