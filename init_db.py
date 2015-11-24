@@ -9,13 +9,12 @@ __author__ = 'SimonSK'
 host = '127.0.0.1'
 user = 'sniffydb_dev'
 password = 'sniffy+DB'
-database = 'sniffydb_main'
-charset = 'utf8mb4'
+db = 'sniffydb_main'
 
 
 def connect_database():
     try:
-        connection = pymysql.connect(host, user, password, database, charset)
+        connection = pymysql.connect(host, user, password, db)
         try:
             with connection.cursor() as cursor:
                 cursor.execute('SELECT VERSION()')
