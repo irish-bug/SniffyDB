@@ -40,7 +40,7 @@ def auto_tag(cursor, pcapid, packet):
           "SELECT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
           "WHERE Packet.pcapid != %s " \
-          "AND Tag.type = 'src' " \
+          "AND Tag.type = 'SRC' " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
           "AND (Packet.src = %s OR Packet.src = %s)"
@@ -49,7 +49,7 @@ def auto_tag(cursor, pcapid, packet):
           "SELECT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
           "WHERE Packet.pcapid != %s " \
-          "AND Tag.type = 'dst' " \
+          "AND Tag.type = 'DST' " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
           "AND (Packet.dst = %s OR Packet.dst = %s)"
