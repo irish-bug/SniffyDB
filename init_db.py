@@ -1,6 +1,5 @@
 #!/usr/bin/python
 import pymysql
-import sys
 
 
 __author__ = 'SimonSK'
@@ -81,7 +80,7 @@ def create_tag(connection):
               "tagid INT NOT NULL AUTO_INCREMENT," \
               "tagname VARCHAR(255) UNIQUE NOT NULL," \
               "ip VARCHAR(15) UNIQUE NOT NULL," \
-              "PRIMARY KEY (tagid)," \
+              "PRIMARY KEY (tagid)" \
               ")"
         cursor.execute(sql)
     connection.commit()
