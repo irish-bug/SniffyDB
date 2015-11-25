@@ -32,7 +32,7 @@ def connect_database():
 
 def clear_all(connection):
     with connection.cursor() as cursor:
-        sql = "DROP TABLE IF EXISTS Tagged, Tag, Packet, Pcap;"
+        sql = "DROP TABLE IF EXISTS Tagged, Tag, Packet, PacketCapture;"
         cursor.execute(sql)
     connection.commit()
     print('All tables dropped!')
@@ -41,14 +41,14 @@ def clear_all(connection):
 def create_pcap(connection):
     with connection.cursor() as cursor:
         # create a new table if not already exists
-        sql = "CREATE TABLE IF NOT EXISTS Pcap (" \
+        sql = "CREATE TABLE IF NOT EXISTS PacketCapture (" \
               "pcapid VARCHAR(255) NOT NULL ," \
               "pcaptime REAL DEFAULT 0," \
               "PRIMARY KEY (pcapid)" \
               ")"
         cursor.execute(sql)
     connection.commit()
-    print('Pcap table created!')
+    print('PacketCapture table created!')
 
 
 def create_packet(connection):
@@ -64,7 +64,7 @@ def create_packet(connection):
               "protocol INT DEFAULT -1," \
               "len INT DEFAULT 0," \
               "payload VARCHAR(2000) DEFAULT NULL," \
-              "FOREIGN KEY (pcapid) REFERENCES Pcap(pcapid)" \
+              "FOREIGN KEY (pcapid) REFERENCES PacketCapture(pcapid)" \
               "ON DELETE CASCADE ON UPDATE CASCADE," \
               "PRIMARY KEY (pcapid, pin)" \
               ")"

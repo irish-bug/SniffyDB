@@ -10,7 +10,7 @@ __author__ = 'SimonSK'
 def add_pcap(connection, pcap):
     with connection.cursor() as cursor:
         # new pcap entry. ignore if the primary key already exists.
-        sql = "INSERT IGNORE INTO Pcap (pcapid, pcaptime)" \
+        sql = "INSERT IGNORE INTO PacketCapture (pcapid, pcaptime)" \
               "VALUES (%s, %s)"
         cursor.execute(sql, (pcap['pcapid'], pcap['pcaptime']))
     connection.commit()
