@@ -171,6 +171,19 @@ def allowed_file(filename):
            filename.rsplit('.', 1)[1] in app.config['ALLOWED_EXTENSIONS']
 
 # Route that will process the file upload
+@app.route('/upload_config', methods=['POST', 'GET'])
+def upload_config():
+	if request.method == 'POST':
+		file = request.files['file']
+		# Check if the file is one of the allowed types/extensions
+		if file and allowed_file(file.filename):
+			filename = secure_filename(file.filename)
+			UPLOAD_FOLDER = basedir + '/../../../config'
+			file.save(os.path.join(UPLOAD_FOLDER, filename))
+			#os.system(basedir+"/../../pcap2db.sh " + filename)
+	return render_template('upload_config.html')
+
+# Route that will process the file upload
 @app.route('/upload', methods=['POST', 'GET'])
 def upload():
 	if request.method == 'POST':
