@@ -10,7 +10,7 @@ __author__ = 'SimonSK'
 def add_tag(connection, tag, type):
     with connection.cursor() as cursor:
         # Insert a row for every packet. ignore if the primary key already exists.
-        sql = "INSERT IGNORE INTO Tag (tag, src)" \
+        sql = "INSERT IGNORE INTO Tag (tag, type)" \
               "VALUES (%s, %s)"
         cursor.execute(sql, (tag, type))
     connection.commit()
