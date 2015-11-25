@@ -62,12 +62,17 @@ def add_page():
 			tag = form.tag.data
 			type_val = form.type_val.data
 			try:
-				query = """INSERT INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
-				db.execute(query)
-				print query
+				# Check if the same pair exists.
 				query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
 				cur = db.query(query)
-				print query
+				# if this pair is the first of its kind, use tagid directly. Otherwise create tag
+				if len(cur) == 0:
+					query = """INSERT INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
+					db.execute(query)
+					
+					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
+					cur = db.query(query)
+
 				query = """INSERT INTO Tagged (pcapid, pin, tagid) VALUES (%s, %s, %s)""" %  ("'"+pcapid+"'", pin, cur[0]['tagid'])
 
 				db.execute(query)
@@ -95,14 +100,19 @@ def edit_page():
 			tag = form.tag.data
 			type_val = form.type_val.data
 			try:
-				query = """SELECT tagid FROM Tagged WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin)
+				# Check if the same pair exists.
+				query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
 				cur = db.query(query)
+				# if this pair is the first of its kind, use tagid directly. Otherwise create tag
 				if len(cur) == 0:
-					flash('Data does not exist')
-				else:
-					query = """UPDATE Tag SET tag=%s, type=%s WHERE tagid=%s""" %  ("'"+tag+"'", "'"+type_val+"'", cur[0]['tagid'])
+					query = """INSERT INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
 					db.execute(query)
-					flash('Data editted.')
+					
+					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
+					cur = db.query(query)
+
+				query = """UPDATE Tagged SET tagid=%s WHERE pcapid=%s AND pin=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin)
+				db.execute(query)
 
 				return redirect('/view_page')
 			except:
@@ -125,9 +135,7 @@ def delete_page():
 		if len(cur) == 0:
 			return redirect('/view_page')
 		else:
-			query = """DELETE FROM Tag WHERE tagid=%s""" %  (cur[0]['tagid'])
-			db.execute(query)
-			query = """DELETE FROM Tagged WHERE tagid=%s""" %  (cur[0]['tagid'])
+			query = """DELETE FROM Tagged WHERE tagid=%s AND pcapid=%s AND pin=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin)
 			db.execute(query)
 	except:
 		flash('An Error has occured')
@@ -213,5 +221,8 @@ def clear_table():
 	db = Database()
 	query_val = """DELETE FROM Packet WHERE (pcapid, pin) NOT IN (SELECT T.pcapid, T.pin FROM Tagged T)"""
 	db.execute(query_val) 
-	return redirect('/index')
+
+	query_val = """DELETE FROM Tag WHERE tagid NOT IN (SELECT T.tagid FROM Tagged T)"""
+	db.execute(query_val) 
+	return redirect('/view_page')
 
