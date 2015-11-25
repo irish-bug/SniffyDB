@@ -29,6 +29,7 @@ def add_tagged(connection, tagid, pcapid, pin):
 
 def main():
     print("testing with dummy data (dhcp.pcap, pcap2.json")
+    init_db.main()
     os.system("./pcap2db.sh ../pcaps/dhcp.pcap")
 
     connection = init_db.connect_database()
@@ -36,7 +37,6 @@ def main():
     add_tagged(connection, 1, 'dhcp.pcap', 2)
     connection.close()
 
-    init_db.main()
     json2db.main(['./pcap2.json'])
     print("finished adding dummy data")
 
