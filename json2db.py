@@ -73,7 +73,7 @@ def main(argv):
         print('input is in unexpected format')
         exit(1)
 
-    p = {'pcapid': pcap['PcapID']}
+    p = {'pcapid': pcap['PcapID'].split('/')[-1]}
     packets = pcap['Packets']
     p['pcaptime'] = packets[0]['time']
 
