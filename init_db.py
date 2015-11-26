@@ -34,7 +34,7 @@ def clear_all(connection):
     with connection.cursor() as cursor:
         sql = "DROP TABLE IF EXISTS Tagged, Tag, Packet, PacketCapture;"
         cursor.execute(sql)
-    connection.commit()
+        connection.commit()
     print('All tables dropped!')
 
 
@@ -47,7 +47,7 @@ def create_pcap(connection):
               "PRIMARY KEY (pcapid)" \
               ")"
         cursor.execute(sql)
-    connection.commit()
+        connection.commit()
     print('PacketCapture table created!')
 
 
@@ -69,7 +69,7 @@ def create_packet(connection):
               "PRIMARY KEY (pcapid, pin)" \
               ")"
         cursor.execute(sql)
-    connection.commit()
+        connection.commit()
     print('Packet table created!')
 
 
@@ -83,7 +83,7 @@ def create_tag(connection):
               "PRIMARY KEY (tagid)" \
               ")"
         cursor.execute(sql)
-    connection.commit()
+        connection.commit()
     print('Tag table created!')
 
 
@@ -100,7 +100,7 @@ def create_tagged(connection):
               "ON UPDATE CASCADE ON DELETE CASCADE" \
               ")"
         cursor.execute(sql)
-    connection.commit()
+        connection.commit()
     print('Tagged table created!')
 
 

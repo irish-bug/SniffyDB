@@ -70,6 +70,49 @@ pcap_json = open('pcap.json', 'w+')
 _test = open('_temp', 'w+')
 packet_data = []
 
+####################################################################
+# 1. keyword.txt to json from Simon
+# i assumed the format is
+# keyword,Tag
+# ex) facebook,sns
+# where both keyword and tag are case-insensitive.
+# the filename is given as the 2nd argument.
+# if no 2nd argument, key_dict is left as empty dict
+#
+# 2. added a line at 128 to include this dict in the output json
+# (because i need it for my part as well)
+#
+# 3. 'tag' key in the output json may need to be a dict as well
+# because each packet can have upto two tags (src and dst),
+# ex) 'SRC':'Bob', 'DST':'sns'
+#
+# 4. just realized, matching every possible keyword for
+# every packet is gonna take ridiculously long. i think it's safe
+# to remove the key-pair from key_dict once one match is found
+# because my portion already does auto-tagging based on other
+# packets that are already tagged.
+# TODO: edit the predef_file path
+key_dict = dict()
+keyword_file = sys.argv[2]
+if keyword_file:
+    keyword_file = basedir + "/" + keyword_file
+    with open(keyword_file, 'r') as f:
+        for line in f:
+            if not line:
+                continue
+            if line == '':
+                continue
+            if line[0] == '\n':
+                continue
+            line = line.strip()
+            line = line.split(',')
+            if len[line] != 2:
+                continue
+            key = line[0].lower()
+            tag = line[1].lower()
+            key_dict[key] = tag
+####################################################################
+
 
 for p in pkts:
     pkt_no += 1
@@ -95,6 +138,7 @@ for p in pkts:
 
 
 pcap_data = {"PcapID": pcap}
+pcap_data["Keywords"] = key_dict # added by Simon
 pcap_data["Packets"] = packet_data 
 
 json.dump(pcap_data, pcap_json, sort_keys=False, indent=4, separators=(',', ': '))

@@ -1,15 +1,14 @@
-
 #!/bin/bash
 # check argument
 if [ -z "$1" ]
     then
-    echo "yo i need the filename"
+    echo "need the pcap filename"
     exit 1
 fi
 
 # pcap to json
 # sniffy alias for sniffyDB
-~/sniffydb/SniffyDB/sniffyDB $1
+~/sniffydb/SniffyDB/sniffyDB $1 $2
 if [ $? -ne 0 ]; then
     echo "pcap to json parse failed for some reason :("
     exit 1

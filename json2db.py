@@ -7,13 +7,22 @@ import init_db
 __author__ = 'SimonSK'
 
 
-def add_pcap(connection, pcap):
+def add_predefined_tag(connection, key_dict):
+    with connection.cursor() as cursor:
+        for tag in key_dict.itervalues():
+            sql = "INSERT IGNORE INTO Tag (tag, type) " \
+                  "VALUES (%s, %s)"
+            cursor.execute(sql, (tag, "SRC"))
+            cursor.execute(sql, (tag, "DST"))
+
+
+def add_pcap(connection, pcapid, pcaptime):
     with connection.cursor() as cursor:
         # new pcap entry. ignore if the primary key already exists.
         sql = "INSERT IGNORE INTO PacketCapture (pcapid, pcaptime)" \
               "VALUES (%s, %s)"
-        cursor.execute(sql, (pcap['pcapid'], pcap['pcaptime']))
-    connection.commit()
+        cursor.execute(sql, (pcapid, pcaptime))
+        connection.commit()
     print('new pcap added!')
 
 
@@ -26,8 +35,17 @@ def add_packet(connection, pcapid, packets):
             cursor.execute(sql, (pcapid, packet['PIN'], packet['time'], packet['src'], packet['dest'],
                                  packet['protocol'], packet['length'], packet['Load'])
                            )
+            if packet['tag']:
+                tags = packet['tag']
+                for type, tag in tags.items():
+                    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
+                          "SELECT Tag.tagid, %s, %s " \
+                          "FROM Tag " \
+                          "WHERE Tag.type = %s AND Tag.tag = %s"
+                    cursor.execute(sql, (pcapid, packet['PIN'], type, tag))
+            connection.commit()
             auto_tag(cursor, pcapid, packet)
-    connection.commit()
+            connection.commit()
     print('new packets added!')
 
 
@@ -60,22 +78,21 @@ def auto_tag(cursor, pcapid, packet):
 def main(argv):
     print("begin importing json to database")
 
-    if not argv[0]:
+    if not argv[0] or argv[0] != "pcap.json":
         print('need json file as the argument')
         exit(1)
 
     # load json
     pcap = json.load(open(argv[0]))
-
-    # save pcapid for later use
-
+    # check if json is properly formatted
     if not pcap['PcapID'] or not pcap['Packets']:
         print('input is in unexpected format')
         exit(1)
-
-    p = {'pcapid': pcap['PcapID'].split('/')[-1]}
+    # variable for later use
+    pcapid = pcap['PcapID'].split('/')[-1]
+    key_dict = pcap['Keywords']
     packets = pcap['Packets']
-    p['pcaptime'] = packets[0]['time']
+    pcaptime = packets[0]['time']
 
     # connect to db
     connection = init_db.connect_database()
@@ -89,9 +106,12 @@ def main(argv):
     init_db.create_tag(connection)
     init_db.create_tagged(connection)
 
-    # create tables
-    add_pcap(connection, p)
-    add_packet(connection, p['pcapid'], packets)
+    # add predefined tags if the list is provided
+    add_predefined_tag(connection, key_dict)
+
+    # add packets
+    add_pcap(connection, pcapid, pcaptime)
+    add_packet(connection, pcapid, packets)
 
     # close connection
     connection.close()
