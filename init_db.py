@@ -81,7 +81,7 @@ def create_tag(connection):
               "tag VARCHAR(255) NOT NULL," \
               "type VARCHAR(3) NOT NULL," \
               "PRIMARY KEY (tagid)" \
-              "UNIQUE (tag, type)" \
+              "UNIQUE KEY (tag, type)" \
               ")"
         cursor.execute(sql)
         connection.commit()
