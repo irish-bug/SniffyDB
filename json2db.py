@@ -61,11 +61,12 @@ def auto_tag(cursor, pcapid, packet):
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE Tag.type = 'SRC' " \
+          "WHERE (Packet.pcapid, != %s XOR Packet.pin != %s) " \
+          "AND Tag.type = 'SRC' " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
           "AND (Packet.src = %s OR Packet.src = %s)"
-    cursor.execute(sql, (pcapid, pin, src, dst))
+    cursor.execute(sql, (pcapid, pin, pcapid, pin, src, dst))
     cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
     rows = cursor.fetchall()
     for row in rows:
@@ -73,11 +74,12 @@ def auto_tag(cursor, pcapid, packet):
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE Tag.type = 'DST' " \
+          "WHERE (Packet.pcapid, != %s XOR Packet.pin != %s) " \
+          "AND Tag.type = 'DST' " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
           "AND (Packet.dst = %s OR Packet.dst = %s)"
-    cursor.execute(sql, (pcapid, pin, src, dst))
+    cursor.execute(sql, (pcapid, pin, pcapid, pin, src, dst))
     cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
     rows = cursor.fetchall()
     for row in rows:
