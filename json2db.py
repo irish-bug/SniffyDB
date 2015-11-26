@@ -35,7 +35,7 @@ def add_packet(connection, pcapid, packets):
             cursor.execute(sql, (pcapid, packet['PIN'], packet['time'], packet['src'], packet['dest'],
                                  packet['protocol'], packet['length'], packet['Load'])
                            )
-            if packet['tag']:
+            if "tag" in packet:
                 tags = packet['tag']
                 for type, tag in tags.items():
                     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
