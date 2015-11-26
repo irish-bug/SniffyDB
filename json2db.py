@@ -90,7 +90,6 @@ def main(argv):
         exit(1)
     # variable for later use
     pcapid = pcap['PcapID'].split('/')[-1]
-    key_dict = pcap['Keywords']
     packets = pcap['Packets']
     pcaptime = packets[0]['time']
 
@@ -107,7 +106,9 @@ def main(argv):
     init_db.create_tagged(connection)
 
     # add predefined tags if the list is provided
-    add_predefined_tag(connection, key_dict)
+    if "Keywords" in pcap:
+        key_dict = pcap['Keywords']
+        add_predefined_tag(connection, key_dict)
 
     # add packets
     add_pcap(connection, pcapid, pcaptime)
