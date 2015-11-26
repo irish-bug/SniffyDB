@@ -38,6 +38,8 @@ def add_packet(connection, pcapid, packets):
             if "tag" in packet:
                 tags = packet['tag']
                 for type, tag in tags.items():
+                    if not tag:
+                        continue
                     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
                           "SELECT DISTINCT Tag.tagid, %s, %s " \
                           "FROM Tag " \
