@@ -98,7 +98,8 @@ def create_tagged(connection):
               "FOREIGN KEY (pcapid, pin) REFERENCES Packet(pcapid, pin)" \
               "ON UPDATE CASCADE ON DELETE CASCADE," \
               "FOREIGN KEY (tagid) REFERENCES Tag(tagid)" \
-              "ON UPDATE CASCADE ON DELETE CASCADE" \
+              "ON UPDATE CASCADE ON DELETE CASCADE," \
+              "UNIQUE KEY (tagid, pcapid, pin)" \
               ")"
         cursor.execute(sql)
         connection.commit()
