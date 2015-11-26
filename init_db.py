@@ -80,7 +80,7 @@ def create_tag(connection):
               "tagid INT NOT NULL AUTO_INCREMENT," \
               "tag VARCHAR(255) NOT NULL," \
               "type VARCHAR(3) NOT NULL," \
-              "PRIMARY KEY (tagid)" \
+              "PRIMARY KEY (tagid)," \
               "UNIQUE KEY (tag, type)" \
               ")"
         cursor.execute(sql)
