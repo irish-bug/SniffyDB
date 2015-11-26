@@ -67,7 +67,8 @@ def auto_tag(cursor, pcapid, packet):
     sql = "INSERT INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE Tag.tagid = Tagged.tagid " \
+          "WHERE Tag.tagid" \
+          "= Tagged.tagid " \
           "AND Tagged.pcapid = Packet.pcapid " \
           "AND Tagged.pin = Packet.pin " \
           "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
