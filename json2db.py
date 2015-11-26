@@ -44,6 +44,10 @@ def add_packet(connection, pcapid, packets):
                           "WHERE Tag.type = %s AND Tag.tag = %s"
                     cursor.execute(sql, (pcapid, packet['PIN'], type, tag))
             connection.commit()
+            cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % packet['PIN'])
+            rows = cursor.fetchall()
+            for row in rows:
+                print("before auto-tag: %s, %s, %s" % row)
             auto_tag(cursor, pcapid, packet)
             connection.commit()
     print('new packets added!')
