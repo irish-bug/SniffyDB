@@ -81,8 +81,8 @@ def auto_tag(cursor, pcapid, packet):
 def main(argv):
     print("begin importing json to database")
 
-#    if not argv[0]:
-    if not argv[0] or argv[0] != "pcap.json":
+    if not argv[0]:
+#    if not argv[0] or argv[0] != "pcap.json":
         print('need json file as the argument')
         exit(1)
 
