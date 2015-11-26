@@ -17,7 +17,8 @@
             "seq-window": 43062,
             "src": "192.168.0.1",
             "tag": {
-                "DST": "sns"
+                "DST": "sns",
+                "SRC": "Bob"
             }
         },
         {
