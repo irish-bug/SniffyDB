@@ -13,7 +13,7 @@ def add_tag(connection, tag, type):
         sql = "INSERT IGNORE INTO Tag (tag, type)" \
               "VALUES (%s, %s)"
         cursor.execute(sql, (tag, type))
-    connection.commit()
+        connection.commit()
     print('new tag added!')
 
 
@@ -23,7 +23,7 @@ def add_tagged(connection, tagid, pcapid, pin):
         sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
               "VALUES (%s, %s, %s)"
         cursor.execute(sql, (tagid, pcapid, pin))
-    connection.commit()
+        connection.commit()
     print('packet tagged!')
 
 
@@ -33,7 +33,8 @@ def main():
     os.system("./pcap2db.sh ../pcaps/dhcp.pcap")
 
     connection = init_db.connect_database()
-    add_tag(connection, 'Bob', 'SRC')
+    add_tag(connection, 'bob', 'SRC')
+    add_tag(connection, 'bob', 'DST')
     add_tagged(connection, 1, 'dhcp.pcap', 2)
     connection.close()
 
