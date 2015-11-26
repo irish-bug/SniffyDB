@@ -66,8 +66,8 @@ def auto_tag(cursor, pcapid, packet):
           "AND Tag.tagid = Tagged.tagid " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
-          "AND (Packet.src = %s OR Packet.src = %s)"
-    cursor.execute(sql, (pcapid, pin, pcapid, pin, src, dst))
+          "AND Packet.src = %s"
+    cursor.execute(sql, (pcapid, pin, pcapid, pin, src))
     cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
     rows = cursor.fetchall()
     for row in rows:
@@ -80,8 +80,8 @@ def auto_tag(cursor, pcapid, packet):
           "AND Tag.tagid = Tagged.tagid " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
-          "AND (Packet.dst = %s OR Packet.dst = %s)"
-    cursor.execute(sql, (pcapid, pin, pcapid, pin, src, dst))
+          "AND Packet.dst = %s"
+    cursor.execute(sql, (pcapid, pin, pcapid, pin, dst))
     cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
     rows = cursor.fetchall()
     for row in rows:
