@@ -93,9 +93,9 @@ packet_data = []
 # packets that are already tagged.
 # TODO: edit the predef_file path
 key_dict = dict()
-keyword_file = sys.argv[2]
-if keyword_file != "":
-    keyword_file = basedir + "/" + keyword_file
+
+if len(sys.argv) > 2 and sys.argv[2] != "":
+    keyword_file = basedir + "/" + sys.argv[2]
     with open(keyword_file, 'r') as f:
         for line in f:
             if not line:
