@@ -94,7 +94,7 @@ packet_data = []
 # TODO: edit the predef_file path
 key_dict = dict()
 keyword_file = sys.argv[2]
-if keyword_file:
+if keyword_file != "":
     keyword_file = basedir + "/" + keyword_file
     with open(keyword_file, 'r') as f:
         for line in f:
