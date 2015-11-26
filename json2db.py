@@ -61,7 +61,7 @@ def auto_tag(cursor, pcapid, packet):
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE (Packet.pcapid, != %s XOR Packet.pin != %s) " \
+          "WHERE (Packet.pcapid != %s XOR Packet.pin != %s) " \
           "AND Tag.type = 'SRC' " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
@@ -74,7 +74,7 @@ def auto_tag(cursor, pcapid, packet):
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE (Packet.pcapid, != %s XOR Packet.pin != %s) " \
+          "WHERE (Packet.pcapid != %s XOR Packet.pin != %s) " \
           "AND Tag.type = 'DST' " \
           "AND Tagged.pin = Packet.pin " \
           "AND Tagged.pcapid = Packet.pcapid " \
