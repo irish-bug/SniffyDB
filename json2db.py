@@ -62,8 +62,8 @@ def auto_tag(cursor, pcapid, packet):
           "AND Tagged.pin = Packet.pin " \
           "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
           "AND Tag.type = 'SRC' " \
-          "AND (Packet.src = %s OR Packet.src = %s)"
-    cursor.execute(sql, (pcapid, pin, pcapid, pin, src, dst))
+          "AND Packet.src = %s"
+    cursor.execute(sql, (pcapid, pin, pcapid, pin, src))
     sql = "INSERT INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
