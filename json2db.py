@@ -39,15 +39,11 @@ def add_packet(connection, pcapid, packets):
                 tags = packet['tag']
                 for type, tag in tags.items():
                     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
-                          "SELECT Tag.tagid, %s, %s " \
+                          "SELECT DISTINCT Tag.tagid, %s, %s " \
                           "FROM Tag " \
                           "WHERE Tag.type = %s AND Tag.tag = %s"
                     cursor.execute(sql, (pcapid, packet['PIN'], type, tag))
             connection.commit()
-            cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % packet['PIN'])
-            rows = cursor.fetchall()
-            for row in rows:
-                print("before auto-tag: %s, %s, %s" % row)
             auto_tag(cursor, pcapid, packet)
             connection.commit()
     print('new packets added!')
@@ -61,31 +57,23 @@ def auto_tag(cursor, pcapid, packet):
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
-          "AND Tag.type = 'SRC' " \
-          "AND Tag.tagid = Tagged.tagid " \
-          "AND Tagged.pin = Packet.pin " \
+          "WHERE Tag.tagid = Tagged.tagid " \
           "AND Tagged.pcapid = Packet.pcapid " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
+          "AND Tag.type = 'SRC' " \
           "AND Packet.src = %s"
     cursor.execute(sql, (pcapid, pin, pcapid, pin, src))
-    cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
-    rows = cursor.fetchall()
-    for row in rows:
-        print("auto-tag: %s, %s, %s" % row)
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
-          "WHERE NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
-          "AND Tag.type = 'DST' " \
-          "AND Tag.tagid = Tagged.tagid " \
-          "AND Tagged.pin = Packet.pin " \
+          "WHERE Tag.tagid = Tagged.tagid " \
           "AND Tagged.pcapid = Packet.pcapid " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
+          "AND Tag.type = 'DST' " \
           "AND Packet.dst = %s"
     cursor.execute(sql, (pcapid, pin, pcapid, pin, dst))
-    cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
-    rows = cursor.fetchall()
-    for row in rows:
-        print("auto-tag: %s, %s, %s" % row)
     print('new packet tagged!!')
 
 
