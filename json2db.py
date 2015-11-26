@@ -44,8 +44,8 @@ def add_packet(connection, pcapid, packets):
                           "WHERE Tag.type = %s AND Tag.tag = %s"
                     cursor.execute(sql, (pcapid, packet['PIN'], type, tag))
             connection.commit()
-            auto_tag(cursor, pcapid, packet)
-            connection.commit()
+#            auto_tag(cursor, pcapid, packet)
+#            connection.commit()
     print('new packets added!')
 
 
@@ -54,17 +54,16 @@ def auto_tag(cursor, pcapid, packet):
     dst = packet['dest']
     src = packet['src']
 
-    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
-          "VALUES (" \
-          "(SELECT DISTINCT Tagged.tagid " \
+    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) " \
+          "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
           "WHERE Tag.tagid = Tagged.tagid " \
           "AND Tagged.pcapid = Packet.pcapid " \
           "AND Tagged.pin = Packet.pin " \
           "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
           "AND Tag.type = 'SRC' " \
-          "AND Packet.src = %s), %s, %s)"
-    cursor.execute(sql, (pcapid, pin, src, pcapid, pin))
+          "AND Packet.src = %s"
+    cursor.execute(sql, (pcapid, pin, pcapid, pin, src))
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
