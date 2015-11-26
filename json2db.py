@@ -63,7 +63,9 @@ def auto_tag(cursor, pcapid, packet):
           "AND (Packet.src = %s OR Packet.src = %s)"
     cursor.execute(sql, (pcapid, pin, src, dst))
     cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
-    print("auto-tag: %s" % cursor.fetchone())
+    rows = cursor.fetchall()
+    for row in rows:
+        print("auto-tag: %s, %s, %s" % row)
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
@@ -73,7 +75,9 @@ def auto_tag(cursor, pcapid, packet):
           "AND (Packet.dst = %s OR Packet.dst = %s)"
     cursor.execute(sql, (pcapid, pin, src, dst))
     cursor.execute("SELECT * FROM Tagged WHERE Tagged.pin = %s" % pin)
-    print("auto-tag: %s" % cursor.fetchone())
+    rows = cursor.fetchall()
+    for row in rows:
+        print("auto-tag: %s, %s, %s" % row)
     print('new packet tagged!!')
 
 
