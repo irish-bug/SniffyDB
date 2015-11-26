@@ -54,8 +54,8 @@ def auto_tag(cursor, pcapid, packet):
     dst = packet['dest']
     src = packet['src']
 
-    sql = "INSERT INTO Tagged (tagid, pcapid, pin) " \
-          "SELECT DISTINCT Tagged.tagid, %s, %s " \
+#    sql = "INSERT INTO Tagged (tagid, pcapid, pin) " \
+    sql = "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
           "WHERE Tag.tagid = Tagged.tagid " \
           "AND Tagged.pcapid = Packet.pcapid " \
@@ -64,6 +64,9 @@ def auto_tag(cursor, pcapid, packet):
           "AND Tag.type = 'SRC' " \
           "AND Packet.src = %s"
     cursor.execute(sql, (pcapid, pin, pcapid, pin, src))
+    rows = cursor.fetchall()
+    for row in rows:
+        print("auto-tag: %s, %s, %s" % row)
     sql = "INSERT INTO Tagged (tagid, pcapid, pin)" \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
           "FROM Tag, Tagged, Packet " \
