@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>D3 Test</title>
+
+
+	<!-- D3JS source script -->
+	<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<!-- JQuery source -->
+	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+	
+	<style>
+
+		.node {
+    			fill: #ccc;
+    			stroke: #fff;
+    			stroke-width: 2px;
+		}
+
+		.edge {
+    			stroke: #777;
+    			stroke-width: 2px;
+		}
+
+    	</style>	
+</head>
+<body>
+
+</body>
+
+
+<script type="text/javascript">
+	
+	// Define the dimensions of the visualization. We're using
+	// a size that's convenient for displaying the graphic on
+	// http://jsDataV.is
+	var width = 640,
+    	    height = 480;	
+
+	var nodes = [];
+	var edges = [];	
+
+	$.ajax({url: "http://db.sniffy.co:5000/SHOWIP", success: function(result){
+        ipNodes = result;
+        console.log(ipNodes);
+    }});
+
+</script>
+
+
+</html>
+
