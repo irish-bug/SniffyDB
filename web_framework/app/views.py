@@ -214,7 +214,7 @@ def pcap():
 @app.route('/SHOWIP', methods=['GET'])
 def showip():
 	db = Database()
-	cur = db.query("""SELECT DISTINCT(src) FROM Packet""")
+	cur = db.query("""SELECT src, dst, protocol FROM Packet""")
 	entries = [dict(src=row['src']) for row in cur]
 	return json.dumps(entries)
 
