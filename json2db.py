@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import json
 import sys
+import os
 import init_db
 
 
@@ -82,9 +83,8 @@ def auto_tag(cursor, pcapid, packet):
 def main(argv):
     print("begin importing json to database")
 
-    if not argv[0]:
-#    if not argv[0] or argv[0] != "pcap.json":
-        print('need json file as the argument')
+    if not argv[0] or not os.path.isfile(argv[0]):
+        print('need existing json file as the argument')
         exit(1)
 
     # load json
@@ -121,6 +121,8 @@ def main(argv):
 
     # close connection
     connection.close()
+
+    os.remove(argv[0])
 
 
 if __name__ == "__main__":

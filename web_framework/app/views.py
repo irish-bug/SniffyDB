@@ -176,10 +176,12 @@ def upload_config():
 	if request.method == 'POST':
 		file = request.files['file']
 		# Check if the file is one of the allowed types/extensions
-		if file and allowed_file(file.filename):
+#		if file and allowed_file(file.filename):
+		if file:
 			filename = secure_filename(file.filename)
-			UPLOAD_FOLDER = basedir + '/../../../config'
-			file.save(os.path.join(UPLOAD_FOLDER, filename))
+#			UPLOAD_FOLDER = basedir + '/../../../config'
+			UPLOAD_FOLDER = basedir + '/../../config'
+			file.save(os.path.join(UPLOAD_FOLDER, "predef_tag.txt"))
 			#os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_config.html')
 
@@ -191,7 +193,9 @@ def upload():
 		# Check if the file is one of the allowed types/extensions
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
-			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			UPLOAD_FOLDER = basedir + '/../../pcaps'
+#			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+			file.save(os.path.join(UPLOAD_FOLDER, filename))
 			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
 
@@ -214,8 +218,8 @@ def pcap():
 @app.route('/SHOWIP', methods=['GET'])
 def showip():
 	db = Database()
-	cur = db.query("""SELECT src, dst, protocol FROM Packet""")
-	entries = [dict(src=row['src']) for row in cur]
+	cur = db.query("""SELECT src, dst, protocol, payload FROM Packet""")
+	entries = [dict(src=row['src'], dst=row['dst'], protocol=row['protocol'], payload=row['payload']) for row in cur]
 	return json.dumps(entries)
 
 # Route that will return all IP addresses that a given IP address communicated

@@ -58,7 +58,7 @@ print " "
 print " Opening",
 print sys.argv[1]
 print " "
-filename = basedir + "/../pcaps/" + pcap
+filename = basedir + "/pcaps/" + pcap
 pkts = rdpcap(filename)
 
 # Read all packets from pcap file and filter out
@@ -94,8 +94,9 @@ packet_data = []
 # TODO: edit the predef_file path
 key_dict = dict()
 
-if len(sys.argv) > 2 and sys.argv[2] != "":
-    keyword_file = basedir + "/../pcaps/" + sys.argv[2]
+#if len(sys.argv) > 2 and sys.argv[2] != "" and os.path.isfile(":
+keyword_file = basedir + "/config/predef_tag.txt"
+if os.path.isfile(keyword_file):
     with open(keyword_file, 'r') as f:
         for line in f:
             if not line:
@@ -106,18 +107,19 @@ if len(sys.argv) > 2 and sys.argv[2] != "":
                 continue
             line = line.strip()
             line = line.split(',')
-            if len[line] != 2:
+            if len(line) != 2:
                 continue
-            key = line[0].lower()
+            keyword = line[0].lower()
             tag = line[1].lower()
-            key_dict[key] = tag
+            key_dict[keyword] = tag
+#    os.remove(keyword_file)
 ####################################################################
 
 def check_load(dictionary, load):
-    for key, value in dictionary.items():
-        if value in load:
-            return key
-    return null        
+    for keyword, tag in dictionary.items():
+        if keyword in load:
+            return tag
+    return None 
 
 for p in pkts:
     pkt_no += 1
@@ -134,7 +136,7 @@ for p in pkts:
                 packet_data.append(packet_info)
 
         else:
-            packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": "None"}        
+            packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": "None", "tag":{"SRC": check_load(key_dict, "test")}}
             packet_data.append(packet_info)
    
     if p.haslayer(ARP):

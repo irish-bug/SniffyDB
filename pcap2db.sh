@@ -8,7 +8,7 @@ fi
 
 # pcap to json
 # sniffy alias for sniffyDB
-~/sniffydb/SniffyDB/sniffyDB $1 $2
+~/sniffydb/SniffyDB/sniffyDB $1
 if [ $? -ne 0 ]; then
     echo "pcap to json parse failed for some reason :("
     exit 1
@@ -23,6 +23,4 @@ if [ $? -ne 0 ]; then
     echo "json to database parse failed for some reason :("
 fi
 
-# remove json file
-rm $pcap
 exit 0
