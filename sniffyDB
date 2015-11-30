@@ -95,7 +95,7 @@ packet_data = []
 key_dict = dict()
 
 if len(sys.argv) > 2 and sys.argv[2] != "":
-    keyword_file = basedir + "/" + sys.argv[2]
+    keyword_file = basedir + "/../pcaps/" + sys.argv[2]
     with open(keyword_file, 'r') as f:
         for line in f:
             if not line:
