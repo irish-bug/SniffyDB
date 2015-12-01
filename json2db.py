@@ -100,12 +100,16 @@ def auto_tag(cursor, pcapid, packet):
 
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)"
     if src_tag_src:
+        print(src_tag_src)
         cursor.execute(sql, (src_tag_src[0], pcapid, pin))
     if src_tag_dst:
+        print(src_tag_dst)
         cursor.execute(sql, (src_tag_dst[0], pcapid, pin))
     if dst_tag_dst:
+        print(dst_tag_dst)
         cursor.execute(sql, (dst_tag_dst[0], pcapid, pin))
     if dst_tag_src:
+        print(dst_tag_src)
         cursor.execute(sql, (dst_tag_src[0], pcapid, pin))
     #print('new packet tagged!!')
 
