@@ -1,7 +1,8 @@
 #! /usr/bin/python
 import sys
 import base64
+__author__ = 'Shane Rogers'
 
-coded_string = sys.argv[1]
-decoded_string = base64.urlsafe_b64decode(coded_string)
-print decoded_string
+
+def decode_string(phrase):
+	return base64.urlsafe_b64decode(phrase)
