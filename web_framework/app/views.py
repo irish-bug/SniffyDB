@@ -13,7 +13,12 @@ __author__ = "Donald Cha"
 basedir = os.path.abspath(os.path.dirname(__file__))
 
 def decode_string(phrase):
-	return base64.urlsafe_b64decode(phrase)
+	decoded_string = base64.urlsafe_b64decode(phrase)
+	try:
+		decoded_string.decode('utf-8')
+		return decoded_string
+	except UnicodeError:
+		return 'Payload is encrypted'
 
 class Database:
 
@@ -226,8 +231,8 @@ def db_get_request(pcapid, pin):
 					src=row['src'],
 					protocol=row['protocol'],
 					length=row['len'],
-#					payload=row['payload'] if row['payload'] == 'None' else decode_string(row['payload']),
-					payload=row['payload'] if row['payload'] == 'None' else 'Cannot be displayed',
+					payload=row['payload'] if row['payload'] == 'None' else decode_string(row['payload']),
+#					payload=row['payload'] if row['payload'] == 'None' else 'Cannot be displayed',
 					pcapid=row['pcapid'],
 					packettime=row['packettime'],
 					pin=row['pin'],
@@ -305,8 +310,8 @@ def showip():
 	entries = [dict(src=row['src'], dst=row['dst'], protocol=row['protocol'], payload=row['payload']) for row in cur]
 	for entry in entries:
 		if entry['payload'] != 'None':
-#			entry['payload'] = decode_string(entry['payload'])
-			entry['payload'] = "Cannot be displayed"
+			entry['payload'] = decode_string(entry['payload'])
+#			entry['payload'] = "Cannot be displayed"
 	return json.dumps(entries)
 
 # Route that will return all IP addresses that a given IP address communicated
