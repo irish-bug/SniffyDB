@@ -77,7 +77,7 @@ def add_page():
 					
 					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
 					cur = db.query(query)
-					print(cur)
+					print("message: " + cur[0]['tagid'])
 
 				query = """INSERT IGNORE INTO Tagged (pcapid, pin, tagid) VALUES (%s, %s, %s)""" %  ("'"+pcapid+"'", pin, cur[0]['tagid'])
 
