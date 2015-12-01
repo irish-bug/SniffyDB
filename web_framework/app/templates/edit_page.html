@@ -53,12 +53,20 @@
     var table = $('#example').DataTable();
 });
 </script>
-<input type="button" onclick="redirect()" value="Delete">
+<input type="button" onclick="redirect()" value="Delete Source Tag">
 <script type="text/javascript">
 function redirect() {
 	var cur = window.location.search;
 	var url_string = "/delete_page"+cur;
 	window.location.replace(url_string);
 }
+</script>
+<input type="button" onclick="redirect()" value="Delete Destination Tag">
+<script type="text/javascript">
+    function redirect() {
+        var cur = window.location.search;
+        var url_string = "/delete_page"+cur;
+        window.location.replace(url_string);
+    }
 </script>
 {% endblock %}
