@@ -10,7 +10,8 @@
     <th>Source IP</th> 
     <th>Destination IP</th>
     <th>Protocol</th>
-    <th>Tagged</th>
+    <th>Source Tag</th>
+    <th>Destination Tag</th>
   </tr>
 </thead>
 <tbody>
@@ -22,7 +23,8 @@
 	<td> {{ entry.src }} </td>
 	<td> {{ entry.dst }} </td>
 	<td> {{ entry.protocol }} </td>
-	<td> {{ entry.tagged }} </td>
+	<td> {{ entry.src_tag }} </td>
+    <td> {{ entry.dst_tag }} </td>
 </tr>
 {% endfor %}
 </tbody>

@@ -14,6 +14,8 @@
     <th>Protocol</th>
     <th>Packet Length</th>
     <th>Payload</th>
+    <th>Source Tag</th>
+    <th>Destination Tag</th>
   </tr>
 </thead>
 <tbody>
@@ -27,6 +29,8 @@
 	<td> {{ entry.protocol }} </td>
 	<td> {{ entry.length }} </td>
 	<td> {{ entry.payload }} </td>
+    <td> {{ entry.src_tag }} </td>
+    <td> {{ entry.dst_tag }} </td>
 </tr>
 {% endfor %}
 </tbody>
