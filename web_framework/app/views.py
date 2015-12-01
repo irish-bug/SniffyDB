@@ -163,11 +163,10 @@ def delete_page():
 	pcapid = request.args['pcapid']
 	pin = request.args['pin']
 	type = request.args['type']
-	print(type)
 	db = Database()
 
 	try:
-		query = """SELECT tagid FROM Tagged WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin)
+		query = """SELECT Tagged.tagid FROM Tagged, Tag WHERE Tagged.tagid=Tag.tagid AND Tag.type=%s AND pcapid=%s AND pin=%s""" % ("'"+type+"'", "'"+pcapid+"'", pin)
 		cur = db.query(query)
 		if len(cur) == 0:
 			return redirect('/view_page')
