@@ -42,8 +42,8 @@ def create_pcap(connection):
     with connection.cursor() as cursor:
         # create a new table if not already exists
         sql = "CREATE TABLE IF NOT EXISTS PacketCapture (" \
-              "pcapid VARCHAR(255) NOT NULL, " \
-              "pcaptime VARCHAR(255) DEFAULT NOT NULL, " \
+              "pcapid VARCHAR(255) NOT NULL," \
+              "pcaptime VARCHAR(255) NOT NULL," \
               "PRIMARY KEY (pcapid)" \
               ")"
         cursor.execute(sql)
@@ -56,16 +56,16 @@ def create_packet(connection):
         # create a new table if not already exists
         # packettime TIMESTAMP(6)
         sql = "CREATE TABLE IF NOT EXISTS  Packet (" \
-              "pcapid VARCHAR(255) NOT NULL, " \
-              "pin INT NOT NULL, " \
-              "packettime VARCHAR(255) DEFAULT NOT NULL, " \
-              "src VARCHAR(15) DEFAULT NULL, " \
-              "dst VARCHAR(15) DEFAULT NULL, " \
-              "protocol INT DEFAULT -1, " \
-              "len INT DEFAULT 0, " \
-              "payload VARCHAR(2000) DEFAULT NULL, " \
+              "pcapid VARCHAR(255) NOT NULL," \
+              "pin INT NOT NULL," \
+              "packettime VARCHAR(255) NOT NULL," \
+              "src VARCHAR(15) DEFAULT NULL," \
+              "dst VARCHAR(15) DEFAULT NULL," \
+              "protocol INT DEFAULT -1," \
+              "len INT DEFAULT 0," \
+              "payload VARCHAR(2000) DEFAULT NULL," \
               "FOREIGN KEY (pcapid) REFERENCES PacketCapture(pcapid)" \
-              "ON DELETE CASCADE ON UPDATE CASCADE, " \
+              "ON DELETE CASCADE ON UPDATE CASCADE," \
               "PRIMARY KEY (pcapid, pin)" \
               ")"
         cursor.execute(sql)
