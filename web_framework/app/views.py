@@ -126,11 +126,8 @@ def edit_page():
 				if len(cur) == 0:
 					query = """INSERT IGNORE INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
 					db.execute(query)
-					
-					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
-					cur = db.query(query)
 
-				query = """UPDATE Tagged SET tagid=%s WHERE pcapid=%s AND pin=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin)
+				query = """UPDATE Tagged, Tag SET Tag.tag=%s WHERE Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type""" %  ("'"+tag+"'", "'"+pcapid+"'", pin, "'"+type_val+"'")
 				db.execute(query)
 
 				return redirect('/view_page')
@@ -161,9 +158,10 @@ def delete_page():
 	pcapid = request.args['pcapid']
 	pin = request.args['pin']
 	db = Database()
+	type_val = form.type_val.data
 
 	try:
-		query = """SELECT tagid FROM Tagged WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin)
+		query = """SELECT tagid FROM Tagged, Tag WHERE pcapid=%s AND pin=%s AND type=%s""" % ("'"+pcapid+"'", pin, type_val)
 		cur = db.query(query)
 		if len(cur) == 0:
 			return redirect('/view_page')
