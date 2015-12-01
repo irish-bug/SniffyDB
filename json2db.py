@@ -66,7 +66,6 @@ def auto_tag(cursor, pcapid, packet):
                 "AND ((Tag.type = 'SRC' AND Packet.src = %s) OR (Tag.type = 'DST' AND Packet.dst = %s))"
     cursor.execute(tag_query, (pcapid, pin, src, src))
     src_tag = cursor.fetchall()
-    print(src_tag)
     if len(src_tag) > 0:
         sql = "INSERT IGNORE INTO Tag (tag, type) " \
               "VALUES (%s, %s)"
@@ -81,7 +80,6 @@ def auto_tag(cursor, pcapid, packet):
 
     cursor.execute(tag_query, (pcapid, pin, dst, dst))
     dst_tag = cursor.fetchall()
-    print(dst_tag)
     if len(dst_tag) > 0:
         sql = "INSERT IGNORE INTO Tag (tag, type) " \
               "VALUES (%s, %s)"
