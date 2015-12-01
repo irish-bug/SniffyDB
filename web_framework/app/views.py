@@ -127,7 +127,10 @@ def edit_page():
 					query = """INSERT IGNORE INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
 					db.execute(query)
 
-				query = """UPDATE Tagged, Tag SET Tag.tag=%s WHERE Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" %  ("'"+tag+"'", "'"+pcapid+"'", pin, "'"+type_val+"'")
+					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
+					cur = db.query(query)
+
+				query = """UPDATE Tagged SET Tagged.tagid=%s WHERE Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin, "'"+type_val+"'")
 				db.execute(query)
 
 				return redirect('/view_page')
