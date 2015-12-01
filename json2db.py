@@ -57,6 +57,33 @@ def auto_tag(cursor, pcapid, packet):
     pin = packet['PIN']
     dst = packet['dest']
     src = packet['src']
+    sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
+          "FROM Tag, Tagged, Packet " \
+          "WHERE Tag.tagid = Tagged.tagid " \
+          "AND Tagged.pcapid = Packet.pcapid " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
+          "AND Tag.type = 'SRC'" \
+          "AND Packet.src = %s"
+    cursor.execute(sql, (pcapid, pin, src))
+    src_tag = ""
+    match = cursor.fetchall()
+    if len(match) != 0:
+        src_tag = match[0]['tag']
+    sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
+          "FROM Tag, Tagged, Packet " \
+          "WHERE Tag.tagid = Tagged.tagid " \
+          "AND Tagged.pcapid = Packet.pcapid " \
+          "AND Tagged.pin = Packet.pin " \
+          "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
+          "AND Tag.type = 'DST'" \
+          "AND Packet.dst = %s))"
+    cursor.execute(sql, (pcapid, pin, dst))
+    dst_tag = ""
+    match = cursor.fetchall()
+    if len(match) != 0:
+        dst_tag = match[0]['tag']
+    print("src:"+src_tag+" dst:"+dst_tag)
 
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) " \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
