@@ -165,7 +165,7 @@ def delete_page():
 	type_val = form.type_val.data
 
 	try:
-		query = """SELECT tagid FROM Tagged, Tag WHERE Tagged.tagid=Tag.tagid AND pcapid=%s AND pin=%s AND type=%s""" % ("'"+pcapid+"'", pin, "'"+type_val+"'")
+		query = """SELECT Tagged.tagid FROM Tagged, Tag WHERE Tagged.tagid=Tag.tagid AND Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" % ("'"+pcapid+"'", pin, "'"+type_val+"'")
 		print(query)
 		cur = db.query(query)
 		print(cur)
