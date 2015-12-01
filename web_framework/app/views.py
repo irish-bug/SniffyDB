@@ -88,8 +88,8 @@ def add_page():
 				return redirect('/add_page')
 
 	elif request.method == 'GET':
-		db = Database()
-		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
+#		db = Database()
+#		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
 #		entries = [dict(dst=row['dst'],
 #			src=row['src'],
 #			protocol=row['protocol'],
@@ -101,7 +101,7 @@ def add_page():
 #		for entry in entries:
 #			if entry['payload'] != 'None':
 #				entry['payload'] = decode_string(entry['payload'])
-		entries = get_rows(cur)
+		entries = db_get_request(pcapid, pin)
 		return render_template('add_page.html', form=form, entries=entries)
 
 @app.route('/edit_page', methods=['GET', 'POST'])
@@ -139,8 +139,8 @@ def edit_page():
 				return redirect('/edit_page')
 
 	elif request.method == 'GET':
-		db = Database()
-		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
+#		db = Database()
+#		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
 #		entries = [dict(dst=row['dst'],
 #			src=row['src'],
 #			protocol=row['protocol'],
@@ -152,7 +152,7 @@ def edit_page():
 #		for entry in entries:
 #			if entry['payload'] != 'None':
 #				entry['payload'] = decode_string(entry['payload'])
-		entries = get_rows(cur)
+		entries = db_get_request(pcapid, pin)
 		return render_template('edit_page.html', form=form, entries=entries)
 
 @app.route('/delete_page', methods=['GET', 'POST'])
@@ -215,7 +215,9 @@ def view_page():
 		entries.append(temp)
 	return render_template('view_page.html', entries=entries)
 
-def get_rows(cur):
+def db_get_request(pcapid, pin):
+	db = Database()
+	cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
 	entries = []
 	for row in cur:
 		temp = dict(dst=row['dst'],
