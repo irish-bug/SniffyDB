@@ -79,7 +79,7 @@ def add_page():
 				if len(cur) == 0:
 					query = """INSERT INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
 					db.execute(query)
-					
+
 					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
 					cur = db.query(query)
 
@@ -93,19 +93,6 @@ def add_page():
 				return redirect('/add_page')
 
 	elif request.method == 'GET':
-#		db = Database()
-#		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
-#		entries = [dict(dst=row['dst'],
-#			src=row['src'],
-#			protocol=row['protocol'],
-#			length=row['len'],
-#			payload=row['payload'],
-#			packettime=row['packettime'],
-#			pcapid=row['pcapid'],
-#			pin=row['pin']) for row in cur]
-#		for entry in entries:
-#			if entry['payload'] != 'None':
-#				entry['payload'] = decode_string(entry['payload'])
 		entries = db_get_request(pcapid, pin)
 		return render_template('add_page.html', form=form, entries=entries)
 
@@ -146,19 +133,6 @@ def edit_page():
 				return redirect('/edit_page')
 
 	elif request.method == 'GET':
-#		db = Database()
-#		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
-#		entries = [dict(dst=row['dst'],
-#			src=row['src'],
-#			protocol=row['protocol'],
-#			length=row['len'],
-#			payload=row['payload'],
-#			packettime=row['packettime'],
-#			pcapid=row['pcapid'],
-#			pin=row['pin']) for row in cur]
-#		for entry in entries:
-#			if entry['payload'] != 'None':
-#				entry['payload'] = decode_string(entry['payload'])
 		entries = db_get_request(pcapid, pin)
 		return render_template('edit_page.html', form=form, entries=entries)
 
@@ -198,13 +172,6 @@ def view_page():
 					PIN=row['pin'],
 					src_tag="",
 					dst_tag="")
-		#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
-		#		new_cur = db.query(tag_query)
-		#		if len(new_cur) == 0:
-		#			temp['tag'] = ''
-		#		else:
-		#			temp['tag'] = new_cur[0]['tag']
-		#		entries.append(temp)
 		tag_query = """SELECT tag, type FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
 		new_cur = db.query(tag_query)
 		if len(new_cur) == 1:
@@ -232,7 +199,6 @@ def db_get_request(pcapid, pin):
 					protocol=row['protocol'],
 					length=row['len'],
 					payload=row['payload'] if row['payload'] == 'None' else decode_string(row['payload']),
-#					payload=row['payload'] if row['payload'] == 'None' else 'Cannot be displayed',
 					pcapid=row['pcapid'],
 					packettime=row['packettime'],
 					pin=row['pin'],
@@ -311,7 +277,6 @@ def showip():
 	for entry in entries:
 		if entry['payload'] != 'None':
 			entry['payload'] = decode_string(entry['payload'])
-#			entry['payload'] = "Cannot be displayed"
 	return json.dumps(entries)
 
 # Route that will return all IP addresses that a given IP address communicated
@@ -320,7 +285,7 @@ def show_communicate():
 	ip_address = request.args['ip']
 	db = Database()
 	query_val = """SELECT DISTINCT dst, protocol FROM Packet WHERE src = %s""" % ("'"+ip_address+"'")
-	cur = db.query(query_val) 
+	cur = db.query(query_val)
 	entries = [dict(dst=row['dst'], proto=row['protocol']) for row in cur]
 	return json.dumps(entries)
 
@@ -329,9 +294,8 @@ def show_communicate():
 def clear_table():
 	db = Database()
 	query_val = """DELETE FROM Packet WHERE (pcapid, pin) NOT IN (SELECT T.pcapid, T.pin FROM Tagged T)"""
-	db.execute(query_val) 
+	db.execute(query_val)
 
 	query_val = """DELETE FROM Tag WHERE tagid NOT IN (SELECT T.tagid FROM Tagged T)"""
-	db.execute(query_val) 
+	db.execute(query_val)
 	return redirect('/view_page')
-
