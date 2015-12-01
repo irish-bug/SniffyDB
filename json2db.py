@@ -83,6 +83,7 @@ def auto_tag(cursor, pcapid, packet):
     match = cursor.fetchall()
     print(match)
     if len(match) != 0:
+        print(match[0])
         dst_tag = match[0]['tag']
     print("src:"+src_tag+" dst:"+dst_tag)
 
