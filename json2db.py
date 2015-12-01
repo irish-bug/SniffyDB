@@ -83,11 +83,11 @@ def auto_tag(cursor, pcapid, packet):
     if len(dst_tag) > 0:
         sql = "INSERT IGNORE INTO Tag (tag, type) " \
               "VALUES (%s, %s)"
-        cursor.execute(sql, (src_tag[0][1], "DST"))
+        cursor.execute(sql, (dst_tag[0][1], "DST"))
         sql = "SELECT tagid FROM Tag " \
               "WHERE tag = %s " \
               "AND type = %s"
-        cursor.execute(sql, (src_tag[0][1], "DST"))
+        cursor.execute(sql, (dst_tag[0][1], "DST"))
         dst_tagid = cursor.fetchone()
         sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)"
         cursor.execute(sql, (dst_tagid, pcapid, pin))
