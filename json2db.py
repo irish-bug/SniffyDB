@@ -34,7 +34,7 @@ def add_packet(connection, pcapid, packets):
         for packet in packets:
             sql = "INSERT IGNORE INTO Packet (pcapid, pin, packettime, src, dst, protocol, len, payload)" \
                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, (pcapid, packet['PIN'], convert_time(packet['time']), packet['src'], packet['dest'],
+            cursor.execute(sql, (pcapid, packet['PIN'], str(convert_time(packet['time'])), packet['src'], packet['dest'],
                                  packet['protocol'], packet['length'], packet['Load'])
                            )
             if "tag" in packet:
@@ -86,7 +86,6 @@ def convert_time(epoch):
     datetime_obj = datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')
     time_utc = timezone('UTC').localize(datetime_obj)
     time_cst = time_utc.astimezone(timezone('America/Chicago'))
-    print(time_cst.strftime('%Y-%m-%d %H:%M:%S.%f'))
     return time_cst.strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
@@ -106,7 +105,7 @@ def main(argv):
     # variable for later use
     pcapid = pcap['PcapID'].split('/')[-1]
     packets = pcap['Packets']
-    pcaptime = convert_time(packets[0]['time'])
+    pcaptime = str(convert_time(packets[0]['time']))
 
     # connect to db
     connection = init_db.connect_database()
