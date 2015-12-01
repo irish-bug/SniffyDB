@@ -86,6 +86,7 @@ def convert_time(epoch):
     datetime_obj = datetime.strptime(time, '%Y-%m-%d %H:%M:%S.%f')
     time_utc = timezone('UTC').localize(datetime_obj)
     time_cst = time_utc.astimezone(timezone('America/Chicago'))
+    print(time_cst.strftime('%Y-%m-%d %H:%M:%S.%f'))
     return time_cst.strftime('%Y-%m-%d %H:%M:%S.%f')
 
 
