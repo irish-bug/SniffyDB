@@ -165,7 +165,7 @@ def delete_page():
 	type_val = form.type_val.data
 
 	try:
-		query = """SELECT tagid FROM Tagged, Tag WHERE pcapid=%s AND pin=%s AND type=%s""" % ("'"+pcapid+"'", pin, type_val)
+		query = """SELECT tagid FROM Tagged, Tag WHERE Tagged.tagid=Tag.tagid pcapid=%s AND pin=%s AND type=%s""" % ("'"+pcapid+"'", pin, type_val)
 		cur = db.query(query)
 		if len(cur) == 0:
 			return redirect('/view_page')
