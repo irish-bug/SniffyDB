@@ -10,19 +10,17 @@
     <th>Source IP</th> 
     <th>Destination IP</th>
     <th>Protocol</th>
-    <th>Tag</th>
   </tr>
 </thead>
 <tbody>
 {% for entry in entries %}
 <tr>
 	<td> {{ entry.pcapid }} </td>
-	<td> {{ entry.PIN }} </td>
+	<td> {{ entry.pin }} </td>
 	<td> {{ entry.packettime }} </td>
 	<td> {{ entry.src }} </td>
 	<td> {{ entry.dst }} </td>
 	<td> {{ entry.protocol }} </td>
-	<td> {{ entry.tag }} </td>
 </tr>
 {% endfor %}
 </tbody>

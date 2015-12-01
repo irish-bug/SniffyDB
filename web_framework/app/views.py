@@ -90,17 +90,18 @@ def add_page():
 	elif request.method == 'GET':
 		db = Database()
 		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
-		entries = [dict(dst=row['dst'],
-			src=row['src'],
-			protocol=row['protocol'],
-			length=row['len'],
-			payload=row['payload'],
-			packettime=row['packettime'],
-			pcapid=row['pcapid'],
-			pin=row['pin']) for row in cur]
-		for entry in entries:
-			if entry['payload'] != 'None':
-				entry['payload'] = decode_string(entry['payload'])
+#		entries = [dict(dst=row['dst'],
+#			src=row['src'],
+#			protocol=row['protocol'],
+#			length=row['len'],
+#			payload=row['payload'],
+#			packettime=row['packettime'],
+#			pcapid=row['pcapid'],
+#			pin=row['pin']) for row in cur]
+#		for entry in entries:
+#			if entry['payload'] != 'None':
+#				entry['payload'] = decode_string(entry['payload'])
+		entries = get_rows(cur)
 		return render_template('add_page.html', form=form, entries=entries)
 
 @app.route('/edit_page', methods=['GET', 'POST'])
@@ -140,17 +141,18 @@ def edit_page():
 	elif request.method == 'GET':
 		db = Database()
 		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
-		entries = [dict(dst=row['dst'],
-			src=row['src'],
-			protocol=row['protocol'],
-			length=row['len'],
-			payload=row['payload'],
-			packettime=row['packettime'],
-			pcapid=row['pcapid'],
-			pin=row['pin']) for row in cur]
-		for entry in entries:
-			if entry['payload'] != 'None':
-				entry['payload'] = decode_string(entry['payload'])
+#		entries = [dict(dst=row['dst'],
+#			src=row['src'],
+#			protocol=row['protocol'],
+#			length=row['len'],
+#			payload=row['payload'],
+#			packettime=row['packettime'],
+#			pcapid=row['pcapid'],
+#			pin=row['pin']) for row in cur]
+#		for entry in entries:
+#			if entry['payload'] != 'None':
+#				entry['payload'] = decode_string(entry['payload'])
+		entries = get_rows(cur)
 		return render_template('edit_page.html', form=form, entries=entries)
 
 @app.route('/delete_page', methods=['GET', 'POST'])
@@ -178,25 +180,30 @@ def delete_page():
 def view_page():
 	db = Database()
 	cur = db.query("""SELECT dst, src, protocol, packettime, pin, pcapid FROM Packet""")
+	#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
+	#		new_cur = db.query(tag_query)
+	#		if len(new_cur) == 0:
+	#			temp['tag'] = ''
+	#		else:
+	#			temp['tag'] = new_cur[0]['tag']
+	#		entries.append(temp)
 	entries = []
-	
 	for row in cur:
 		temp = dict(dst=row['dst'],
-			src=row['src'],
-			protocol=row['protocol'],
-			pcapid=row['pcapid'],
-			packettime=row['packettime'],
-			PIN=row['pin'])
-#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
-#		new_cur = db.query(tag_query)
-#		if len(new_cur) == 0:
-#			temp['tag'] = ''
-#		else:
-#			temp['tag'] = new_cur[0]['tag']
-#		entries.append(temp)
+					src=row['src'],
+					protocol=row['protocol'],
+					pcapid=row['pcapid'],
+					packettime=row['packettime'],
+					pin=row['pin'])
+		#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
+		#		new_cur = db.query(tag_query)
+		#		if len(new_cur) == 0:
+		#			temp['tag'] = ''
+		#		else:
+		#			temp['tag'] = new_cur[0]['tag']
+		#		entries.append(temp)
 		tag_query = """SELECT tag, type FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
 		new_cur = db.query(tag_query)
-		print(new_cur)
 		if len(new_cur) == 1:
 			if new_cur[0]['type'] == 'SRC':
 				temp['src'] += " (%s)" % new_cur[0]['tag']
@@ -211,6 +218,34 @@ def view_page():
 				temp['dst'] += " (%s)" % new_cur[0]['tag']
 		entries.append(temp)
 	return render_template('view_page.html', entries=entries)
+
+def get_rows(cur):
+	entries = []
+	for row in cur:
+		temp = dict(dst=row['dst'],
+					src=row['src'],
+					protocol=row['protocol'],
+					length=row['len'],
+					payload=row['payload'] if row['payload'] == 'None' else decode_string(row['payload']),
+					pcapid=row['pcapid'],
+					packettime=row['packettime'],
+					pin=row['pin'])
+		tag_query = """SELECT tag, type FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
+		new_cur = db.query(tag_query)
+		if len(new_cur) == 1:
+			if new_cur[0]['type'] == 'SRC':
+				temp['src'] += " (%s)" % new_cur[0]['tag']
+			else:
+				temp['dst'] += " (%s)" % new_cur[0]['tag']
+		elif len(new_cur) == 2:
+			if new_cur[0]['type'] == 'SRC':
+				temp['src'] += " (%s)" % new_cur[0]['tag']
+				temp['dst'] += " (%s)" % new_cur[1]['tag']
+			else:
+				temp['src'] += " (%s)" % new_cur[1]['tag']
+				temp['dst'] += " (%s)" % new_cur[0]['tag']
+		entries.append(temp)
+	return entries
 
 # For a given file, return whether it's an allowed type or not
 def allowed_file(filename):
