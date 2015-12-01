@@ -38,10 +38,10 @@
      
     $('#example tbody').on('click', 'tr', function () {
         var data = table.row( this ).data();
-	var url_string = "/add_page?pcapid="+data[0]+"&pin="+data[1];
+	var url_string = "/add_page?pcapid="+data[0]+"&pin="+data[1]+"&type="+data[7];
 	if (data[6].length > 0)
 	{
-		url_string = "/edit_page?pcapid="+data[0]+"&pin="+data[1];
+		url_string = "/edit_page?pcapid="+data[0]+"&pin="+data[1]+"&type="+data[7];
 	}
         window.location.replace(url_string);
     } );

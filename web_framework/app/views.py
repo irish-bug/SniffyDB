@@ -110,6 +110,7 @@ def edit_page():
 	pin = request.args['pin']
 	type = request.args['type']
 
+	print(type)
 	if request.method == 'POST':
 		if form.validate() == False:
 			flash('All fields are required.')
