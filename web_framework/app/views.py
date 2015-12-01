@@ -6,9 +6,14 @@ from werkzeug import secure_filename
 from flask.json import jsonify
 import json
 import os
+import base64
+import sys
 
 __author__ = "Donald Cha"
 basedir = os.path.abspath(os.path.dirname(__file__))
+
+def decode_string(phrase):
+	return base64.urlsafe_b64decode(phrase)
 
 class Database:
 
@@ -80,10 +85,23 @@ def add_page():
 				return redirect('/view_page')
 			except:
 				flash('An Error has occured')
-				return render_template('add_page.html', form=form)
+				return redirect('/add_page')
 
 	elif request.method == 'GET':
-		return render_template('add_page.html', form=form)
+		db = Database()
+		cur = db.query("""SELECT * FROM Packet""")
+		entries = [dict(dst=row['dst'],
+			src=row['src'],
+			protocol=row['protocol'],
+			length=row['len'],
+			payload=row['payload'],
+			packettime=row['packettime'],
+			pcapid=row['pcapid'],
+			pin=row['pin']) for row in cur]
+		for entry in entries:
+			if entry['payload'] != 'None':
+				entry['payload'] = decode_string(entry['payload'])
+		return render_template('add_page.html', form=form, entries=entries)
 
 @app.route('/edit_page', methods=['GET', 'POST'])
 def edit_page():
@@ -117,10 +135,23 @@ def edit_page():
 				return redirect('/view_page')
 			except:
 				flash('An Error has occured')
-				return render_template('edit_page.html', form=form)
+				return redirect('/edit_page')
 
 	elif request.method == 'GET':
-		return render_template('edit_page.html', form=form)
+		db = Database()
+		cur = db.query("""SELECT * FROM Packet""")
+		entries = [dict(dst=row['dst'],
+			src=row['src'],
+			protocol=row['protocol'],
+			length=row['len'],
+			payload=row['payload'],
+			packettime=row['packettime'],
+			pcapid=row['pcapid'],
+			pin=row['pin']) for row in cur]
+		for entry in entries:
+			if entry['payload'] != 'None':
+				entry['payload'] = decode_string(entry['payload'])
+		return render_template('edit_page.html', form=form, entries=entries)
 
 @app.route('/delete_page', methods=['GET', 'POST'])
 def delete_page():
@@ -179,7 +210,6 @@ def upload_config():
 #		if file and allowed_file(file.filename):
 		if file:
 			filename = secure_filename(file.filename)
-#			UPLOAD_FOLDER = basedir + '/../../../config'
 			UPLOAD_FOLDER = basedir + '/../../config'
 			file.save(os.path.join(UPLOAD_FOLDER, "predef_tag.txt"))
 			#os.system(basedir+"/../../pcap2db.sh " + filename)
@@ -194,7 +224,6 @@ def upload():
 		if file and allowed_file(file.filename):
 			filename = secure_filename(file.filename)
 			UPLOAD_FOLDER = basedir + '/../../pcaps'
-#			file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 			file.save(os.path.join(UPLOAD_FOLDER, filename))
 			os.system(basedir+"/../../pcap2db.sh " + filename)
 	return render_template('upload_page.html')
@@ -220,6 +249,9 @@ def showip():
 	db = Database()
 	cur = db.query("""SELECT src, dst, protocol, payload FROM Packet""")
 	entries = [dict(src=row['src'], dst=row['dst'], protocol=row['protocol'], payload=row['payload']) for row in cur]
+	for entry in entries:
+		if entry['payload'] != 'None':
+			entry['payload'] = decode_string(entry['payload'])
 	return json.dumps(entries)
 
 # Route that will return all IP addresses that a given IP address communicated

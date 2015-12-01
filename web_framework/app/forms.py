@@ -18,9 +18,9 @@ class PacketForm(Form):
 class TagForm(Form):
 	tag = StringField('Tag', validators=[DataRequired()])
 	type_val = SelectField('Type', choices=[('DST', 'Destination IP'), ('SRC', 'Source IP')])
-	submit = SubmitField("Send")
+	submit = SubmitField("Submit")
 
 class PacketCaptureForm(Form):
 	pcapid = StringField('PcapID', validators=[DataRequired()])
 	pcaptime = StringField('Pcap Generation Time', validators=[DataRequired()])
-	submit = SubmitField("Send")
+	submit = SubmitField("Submit")

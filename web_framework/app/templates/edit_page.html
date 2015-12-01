@@ -3,6 +3,35 @@
 {% block content %}
 <h1>Edit Tag</h1>
 
+<table id="example" class="display" cellspacing="0" width="100%">
+<thead>  
+<tr>
+    <th>Pcap ID</th>
+    <th>PIN</th> 
+    <th>Packet Time</th>
+    <th>Source IP</th> 
+    <th>Destination IP</th>
+    <th>Protocol</th>
+    <th>Packet Length</th>
+    <th>Payload</th>
+  </tr>
+</thead>
+<tbody>
+{% for entry in entries %}
+<tr>
+	<td> {{ entry.pcapid }} </td>
+	<td> {{ entry.pin }} </td>
+	<td> {{ entry.packettime }} </td>
+	<td> {{ entry.src }} </td>
+	<td> {{ entry.dst }} </td>
+	<td> {{ entry.protocol }} </td>
+	<td> {{ entry.length }} </td>
+	<td> {{ entry.payload }} </td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+
 {% for message in get_flashed_messages() %}
     <div class="flash">{{ message }}</div>
 {% endfor %}
@@ -18,7 +47,12 @@
 </form>
 
 <script type="text/javascript" charset="utf8" src="//code.jquery.com/jquery-1.11.3.min.js"></script>
-
+  <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+  <script>
+  $(document).ready(function() {
+    var table = $('#example').DataTable();
+});
+</script>
 <input type="button" onclick="redirect()" value="Delete">
 <script type="text/javascript">
 function redirect() {
