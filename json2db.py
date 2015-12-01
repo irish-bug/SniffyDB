@@ -68,11 +68,13 @@ def auto_tag(cursor, pcapid, packet):
     cursor.execute(sql, (pcapid, pin, src))
     src_tag_src = cursor.fetchone()
     if src_tag_src:
+        sql = "INSERT IGNORE INTO Tag (tag, type) " \
+              "VALUES (%s, %s)"
+        cursor.execute(sql, (src_tag_src[1], "DST"))
         sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
               "FROM Tag " \
               "WHERE Tag.tag = %s " \
               "AND Tag.type = 'DST'"
-        print(sql)
         cursor.execute(sql, (src_tag_src[1]))
     src_tag_dst = cursor.fetchone()
     sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
@@ -86,14 +88,15 @@ def auto_tag(cursor, pcapid, packet):
     cursor.execute(sql, (pcapid, pin, dst))
     dst_tag_dst = cursor.fetchone()
     if dst_tag_dst:
+        sql = "INSERT IGNORE INTO Tag (tag, type) " \
+              "VALUES (%s, %s)"
+        cursor.execute(sql, (dst_tag_dst[1], "SRC"))
         sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
               "FROM Tag " \
               "WHERE Tag.tag = %s " \
               "AND Tag.type = 'SRC'"
-        print(sql)
         cursor.execute(sql, (dst_tag_dst[1]))
     dst_tag_src = cursor.fetchone()
-    print('hello')
 
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)"
     if src_tag_src:
