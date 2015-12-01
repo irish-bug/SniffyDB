@@ -132,7 +132,7 @@ def edit_page():
 					cur = db.query(query)
 					print(cur)
 
-				query = """UPDATE Tagged SET Tagged.tagid=%s WHERE Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin, "'"+type_val+"'")
+				query = """UPDATE Tagged, Tag SET Tagged.tagid=%s WHERE Tagged.tagid=Tag.tagid AND Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin, "'"+type_val+"'")
 				print(query)
 				db.execute(query)
 
