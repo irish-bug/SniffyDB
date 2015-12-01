@@ -11,6 +11,7 @@
     <th>Destination IP</th>
     <th>Protocol</th>
     <th>Tag</th>
+    <th>Tagged IP</th>
   </tr>
 </thead>
 <tbody>
@@ -23,6 +24,7 @@
 	<td> {{ entry.dst }} </td>
 	<td> {{ entry.protocol }} </td>
 	<td> {{ entry.tag }} </td>
+    <td> {{ entry.type }}</td>
 </tr>
 {% endfor %}
 </tbody>
