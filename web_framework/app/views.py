@@ -118,6 +118,7 @@ def edit_page():
 			db = Database()
 			tag = form.tag.data
 			type_val = form.type_val.data
+
 			try:
 				# Check if the same pair exists.
 				query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
@@ -128,12 +129,10 @@ def edit_page():
 					db.execute(query)
 
 					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
-					print(query)
 					cur = db.query(query)
-					print(cur)
-
-				query = """UPDATE Tagged, Tag SET Tagged.tagid=%s WHERE Tagged.tagid=Tag.tagid AND Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin, "'"+type_val+"'")
-				print(query)
+					query = """INSERT IGNORE INTO Tagged (pcapid, pin, tagid) VALUES (%s, %s, %s)""" %  ("'"+pcapid+"'", pin, cur[0]['tagid'])
+				else:
+					query = """UPDATE Tagged, Tag SET Tagged.tagid=%s WHERE Tagged.tagid=Tag.tagid AND Tagged.pcapid=%s AND Tagged.pin=%s AND Tag.type=%s""" %  (cur[0]['tagid'], "'"+pcapid+"'", pin, "'"+type_val+"'")
 				db.execute(query)
 
 				return redirect('/view_page')
