@@ -10,17 +10,19 @@
     <th>Source IP</th> 
     <th>Destination IP</th>
     <th>Protocol</th>
+    <th>Tagged</th>
   </tr>
 </thead>
 <tbody>
 {% for entry in entries %}
 <tr>
 	<td> {{ entry.pcapid }} </td>
-	<td> {{ entry.pin }} </td>
+	<td> {{ entry.PIN }} </td>
 	<td> {{ entry.packettime }} </td>
 	<td> {{ entry.src }} </td>
 	<td> {{ entry.dst }} </td>
 	<td> {{ entry.protocol }} </td>
+	<td> {{ entry.tagged }} </td>
 </tr>
 {% endfor %}
 </tbody>
@@ -35,7 +37,7 @@
     $('#example tbody').on('click', 'tr', function () {
         var data = table.row( this ).data();
 	var url_string = "/add_page?pcapid="+data[0]+"&pin="+data[1];
-	if (data[6].length > 0)
+	if (data[6] == 'Yes')
 	{
 		url_string = "/edit_page?pcapid="+data[0]+"&pin="+data[1];
 	}

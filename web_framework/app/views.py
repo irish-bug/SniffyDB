@@ -180,13 +180,6 @@ def delete_page():
 def view_page():
 	db = Database()
 	cur = db.query("""SELECT dst, src, protocol, packettime, pin, pcapid FROM Packet""")
-	#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
-	#		new_cur = db.query(tag_query)
-	#		if len(new_cur) == 0:
-	#			temp['tag'] = ''
-	#		else:
-	#			temp['tag'] = new_cur[0]['tag']
-	#		entries.append(temp)
 	entries = []
 	for row in cur:
 		temp = dict(dst=row['dst'],
@@ -194,7 +187,8 @@ def view_page():
 					protocol=row['protocol'],
 					pcapid=row['pcapid'],
 					packettime=row['packettime'],
-					pin=row['pin'])
+					PIN=row['pin'],
+					tagged='No')
 		#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
 		#		new_cur = db.query(tag_query)
 		#		if len(new_cur) == 0:
@@ -205,6 +199,7 @@ def view_page():
 		tag_query = """SELECT tag, type FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
 		new_cur = db.query(tag_query)
 		if len(new_cur) == 1:
+			temp['tagged'] = 'Yes'
 			if new_cur[0]['type'] == 'SRC':
 				temp['src'] += " (%s)" % new_cur[0]['tag']
 			else:
