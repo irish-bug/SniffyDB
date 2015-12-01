@@ -71,7 +71,7 @@ def auto_tag(cursor, pcapid, packet):
     print(match)
     if len(match) != 0:
         print(match[0])
-        dst_tag = match[0]['tag']
+        src_tag = match[0][1]
     print("src:"+src_tag)
     sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
           "FROM Tag, Tagged, Packet " \
@@ -87,7 +87,7 @@ def auto_tag(cursor, pcapid, packet):
     print(match)
     if len(match) != 0:
         print(match[0])
-        dst_tag = match[0]['tag']
+        dst_tag = match[0][1]
     print("dst:"+dst_tag)
 
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) " \
