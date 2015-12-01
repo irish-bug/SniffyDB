@@ -89,7 +89,7 @@ def add_page():
 
 	elif request.method == 'GET':
 		db = Database()
-		cur = db.query("""SELECT * FROM Packet""")
+		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
 		entries = [dict(dst=row['dst'],
 			src=row['src'],
 			protocol=row['protocol'],
@@ -139,7 +139,7 @@ def edit_page():
 
 	elif request.method == 'GET':
 		db = Database()
-		cur = db.query("""SELECT * FROM Packet""")
+		cur = db.query("""SELECT * FROM Packet WHERE pcapid=%s AND pin=%s""" % ("'"+pcapid+"'", pin))
 		entries = [dict(dst=row['dst'],
 			src=row['src'],
 			protocol=row['protocol'],
