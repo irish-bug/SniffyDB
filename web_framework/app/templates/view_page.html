@@ -7,11 +7,11 @@
     <th>Pcap ID</th>
     <th>PIN</th> 
     <th>Packet Time</th>
-    <th>Source IP</th> 
-    <th>Destination IP</th>
-    <th>Protocol</th>
+    <th>Source IP</th>
     <th>Source Tag</th>
+    <th>Destination IP</th>
     <th>Destination Tag</th>
+    <th>Protocol</th>
   </tr>
 </thead>
 <tbody>
@@ -21,10 +21,10 @@
 	<td> {{ entry.PIN }} </td>
 	<td> {{ entry.packettime }} </td>
 	<td> {{ entry.src }} </td>
+    <td> {{ entry.src_tag }} </td>
 	<td> {{ entry.dst }} </td>
-	<td> {{ entry.protocol }} </td>
-	<td> {{ entry.src_tag }} </td>
     <td> {{ entry.dst_tag }} </td>
+	<td> {{ entry.protocol }} </td>
 </tr>
 {% endfor %}
 </tbody>

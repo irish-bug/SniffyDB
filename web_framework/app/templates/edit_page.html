@@ -9,13 +9,13 @@
     <th>Pcap ID</th>
     <th>PIN</th> 
     <th>Packet Time</th>
-    <th>Source IP</th> 
+    <th>Source IP</th>
+    <th>Source Tag</th>
     <th>Destination IP</th>
+    <th>Destination Tag</th>
     <th>Protocol</th>
     <th>Packet Length</th>
     <th>Payload</th>
-    <th>Source Tag</th>
-    <th>Destination Tag</th>
   </tr>
 </thead>
 <tbody>
@@ -25,12 +25,12 @@
 	<td> {{ entry.pin }} </td>
 	<td> {{ entry.packettime }} </td>
 	<td> {{ entry.src }} </td>
+    <td> {{ entry.src_tag }} </td>
 	<td> {{ entry.dst }} </td>
+    <td> {{ entry.dst_tag }} </td>
 	<td> {{ entry.protocol }} </td>
 	<td> {{ entry.length }} </td>
 	<td> {{ entry.payload }} </td>
-    <td> {{ entry.src_tag }} </td>
-    <td> {{ entry.dst_tag }} </td>
 </tr>
 {% endfor %}
 </tbody>
