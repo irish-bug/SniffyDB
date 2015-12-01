@@ -81,6 +81,7 @@ def auto_tag(cursor, pcapid, packet):
     cursor.execute(sql, (pcapid, pin, dst))
     dst_tag = ""
     match = cursor.fetchall()
+    print(match)
     if len(match) != 0:
         dst_tag = match[0]['tag']
     print("src:"+src_tag+" dst:"+dst_tag)
