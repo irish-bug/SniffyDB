@@ -57,7 +57,7 @@
 <script type="text/javascript">
 function redirect() {
 	var cur = window.location.search;
-	var url_string = "/delete_page"+cur;
+	var url_string = "/delete_page"+cur+"&type=SRC";
 	window.location.replace(url_string);
 }
 </script>
@@ -65,7 +65,7 @@ function redirect() {
 <script type="text/javascript">
     function redirect() {
         var cur = window.location.search;
-        var url_string = "/delete_page"+cur;
+        var url_string = "/delete_page"+cur+"&type=DST";
         window.location.replace(url_string);
     }
 </script>

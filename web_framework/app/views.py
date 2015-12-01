@@ -162,6 +162,8 @@ def delete_page():
 	form = TagForm()
 	pcapid = request.args['pcapid']
 	pin = request.args['pin']
+	type = request.args['type']
+	print(type)
 	db = Database()
 
 	try:
