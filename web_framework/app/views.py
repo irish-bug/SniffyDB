@@ -76,6 +76,7 @@ def add_page():
 					db.execute(query)
 					
 					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
+					print(query)
 					cur = db.query(query)
 					print("message: " + cur[0]['tagid'])
 
