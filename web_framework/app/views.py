@@ -190,7 +190,7 @@ def view_page():
 					protocol=row['protocol'],
 					pcapid=row['pcapid'],
 					packettime=row['packettime'],
-					pin=row['pin'],
+					PIN=row['pin'],
 					src_tag="",
 					dst_tag="")
 		#		tag_query = """SELECT tag FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
