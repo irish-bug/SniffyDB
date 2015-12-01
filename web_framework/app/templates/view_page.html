@@ -11,7 +11,6 @@
     <th>Destination IP</th>
     <th>Protocol</th>
     <th>Tag</th>
-    <th>Tagged IP</th>
   </tr>
 </thead>
 <tbody>
@@ -24,7 +23,6 @@
 	<td> {{ entry.dst }} </td>
 	<td> {{ entry.protocol }} </td>
 	<td> {{ entry.tag }} </td>
-    <td> {{ entry.type }}</td>
 </tr>
 {% endfor %}
 </tbody>
@@ -38,10 +36,10 @@
      
     $('#example tbody').on('click', 'tr', function () {
         var data = table.row( this ).data();
-	var url_string = "/add_page?pcapid="+data[0]+"&pin="+data[1]+"&type="+data[7];
+	var url_string = "/add_page?pcapid="+data[0]+"&pin="+data[1];
 	if (data[6].length > 0)
 	{
-		url_string = "/edit_page?pcapid="+data[0]+"&pin="+data[1]+"&type="+data[7];
+		url_string = "/edit_page?pcapid="+data[0]+"&pin="+data[1];
 	}
         window.location.replace(url_string);
     } );

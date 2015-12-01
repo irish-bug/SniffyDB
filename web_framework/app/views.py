@@ -108,9 +108,7 @@ def edit_page():
 	form = TagForm()
 	pcapid = request.args['pcapid']
 	pin = request.args['pin']
-	type = request.args['type']
 
-	print(type)
 	if request.method == 'POST':
 		if form.validate() == False:
 			flash('All fields are required.')
@@ -198,6 +196,7 @@ def view_page():
 #		entries.append(temp)
 		tag_query = """SELECT tag, type FROM Packet P, Tag T, Tagged Tg WHERE P.pcapid=Tg.pcapid AND P.pin=Tg.pin AND T.tagid=Tg.tagid AND P.pcapid=%s AND P.pin=%s""" % ("'"+row['pcapid']+"'", row['pin'])
 		new_cur = db.query(tag_query)
+		print(new_cur)
 		if len(new_cur) == 0:
 			temp['tag'] = ''
 			temp['type'] = ''
