@@ -53,17 +53,17 @@
     var table = $('#example').DataTable();
 });
 </script>
-<input type="del_src_button" onclick="redirect()" value="Delete Source Tag">
+<input type="button" onclick="src_redirect()" value="Delete Source Tag">
 <script type="text/javascript">
-    function redirect() {
+    function src_redirect() {
         var cur = window.location.search;
         var url_string = "/delete_page"+cur+"&type=SRC";
         window.location.replace(url_string);
     }
 </script>
-<input type="del_dst_button" onclick="redirect()" value="Delete Destination Tag">
+<input type="button" onclick="dst_redirect()" value="Delete Destination Tag">
 <script type="text/javascript">
-    function redirect() {
+    function dst_redirect() {
         var cur = window.location.search;
         var url_string = "/delete_page"+cur+"&type=DST";
         window.location.replace(url_string);
