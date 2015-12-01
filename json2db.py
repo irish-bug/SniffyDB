@@ -68,8 +68,11 @@ def auto_tag(cursor, pcapid, packet):
     cursor.execute(sql, (pcapid, pin, src))
     src_tag = ""
     match = cursor.fetchall()
+    print(match)
     if len(match) != 0:
-        src_tag = match[0]['tag']
+        print(match[0])
+        dst_tag = match[0]['tag']
+    print("src:"+src_tag+" dst:"+dst_tag)
     sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
           "FROM Tag, Tagged, Packet " \
           "WHERE Tag.tagid = Tagged.tagid " \
