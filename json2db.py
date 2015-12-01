@@ -77,7 +77,7 @@ def auto_tag(cursor, pcapid, packet):
           "AND Tagged.pin = Packet.pin " \
           "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
           "AND Tag.type = 'DST'" \
-          "AND Packet.dst = %s))"
+          "AND Packet.dst = %s"
     cursor.execute(sql, (pcapid, pin, dst))
     dst_tag = ""
     match = cursor.fetchall()
