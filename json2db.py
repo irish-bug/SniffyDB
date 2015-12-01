@@ -91,6 +91,7 @@ def auto_tag(cursor, pcapid, packet):
               "AND Tag.type = 'SRC'"
         cursor.execute(sql, (dst_tag_dst[1]))
     dst_tag_src = cursor.fetchone()
+    print('hello')
 
     sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) " \
           "SELECT DISTINCT Tagged.tagid, %s, %s " \
