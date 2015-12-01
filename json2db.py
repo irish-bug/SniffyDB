@@ -34,7 +34,7 @@ def add_packet(connection, pcapid, packets):
         for packet in packets:
             sql = "INSERT IGNORE INTO Packet (pcapid, pin, packettime, src, dst, protocol, len, payload)" \
                   "VALUES (%s, %s, %s, %s, %s, %s, %s, %s)"
-            cursor.execute(sql, (pcapid, packet['PIN'], str(convert_time(packet['time'])), packet['src'], packet['dest'],
+            cursor.execute(sql, (pcapid, packet['PIN'], convert_time(packet['time']), packet['src'], packet['dest'],
                                  packet['protocol'], packet['length'], packet['Load'])
                            )
             if "tag" in packet:
@@ -105,7 +105,7 @@ def main(argv):
     # variable for later use
     pcapid = pcap['PcapID'].split('/')[-1]
     packets = pcap['Packets']
-    pcaptime = str(convert_time(packets[0]['time']))
+    pcaptime = convert_time(packets[0]['time'])
 
     # connect to db
     connection = init_db.connect_database()
