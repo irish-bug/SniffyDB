@@ -108,6 +108,7 @@ def edit_page():
 	form = TagForm()
 	pcapid = request.args['pcapid']
 	pin = request.args['pin']
+	type = request.args['type']
 
 	if request.method == 'POST':
 		if form.validate() == False:
@@ -123,7 +124,7 @@ def edit_page():
 				cur = db.query(query)
 				# if this pair is the first of its kind, use tagid directly. Otherwise create tag
 				if len(cur) == 0:
-					query = """INSERT INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
+					query = """INSERT IGNORE INTO Tag (tag, type) VALUES (%s, %s)""" %  ("'"+tag+"'", "'"+type_val+"'")
 					db.execute(query)
 					
 					query = """SELECT tagid FROM Tag WHERE tag=%s AND type=%s""" % ("'"+tag+"'", "'"+type_val+"'")
