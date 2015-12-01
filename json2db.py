@@ -57,60 +57,40 @@ def auto_tag(cursor, pcapid, packet):
     pin = packet['PIN']
     dst = packet['dest']
     src = packet['src']
-    sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
-          "FROM Tag, Tagged, Packet " \
-          "WHERE Tag.tagid = Tagged.tagid " \
-          "AND Tagged.pcapid = Packet.pcapid " \
-          "AND Tagged.pin = Packet.pin " \
-          "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
-          "AND Tag.type = 'SRC'" \
-          "AND Packet.src = %s"
-    cursor.execute(sql, (pcapid, pin, src))
-    src_tag_src = cursor.fetchone()
-    if src_tag_src:
+    tag_query = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
+                "FROM Tag, Tagged, Packet " \
+                "WHERE Tag.tagid = Tagged.tagid " \
+                "AND Tagged.pcapid = Packet.pcapid " \
+                "AND Tagged.pin = Packet.pin " \
+                "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
+                "AND ((Tag.type = 'SRC' AND Packet.src = %s) OR (Tag.type = 'DST' AND Packet.dst = %s))"
+    cursor.execute(tag_query, (pcapid, pin, src, src))
+    src_tag = cursor.fetchall()
+    if len(src_tag) > 0:
         sql = "INSERT IGNORE INTO Tag (tag, type) " \
               "VALUES (%s, %s)"
-        cursor.execute(sql, (src_tag_src[1], "DST"))
-        sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
-              "FROM Tag " \
-              "WHERE Tag.tag = %s " \
-              "AND Tag.type = 'DST'"
-        cursor.execute(sql, (src_tag_src[1]))
-    src_tag_dst = cursor.fetchone()
-    sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
-          "FROM Tag, Tagged, Packet " \
-          "WHERE Tag.tagid = Tagged.tagid " \
-          "AND Tagged.pcapid = Packet.pcapid " \
-          "AND Tagged.pin = Packet.pin " \
-          "AND NOT (Packet.pcapid = %s AND Packet.pin = %s) " \
-          "AND Tag.type = 'DST'" \
-          "AND Packet.dst = %s"
-    cursor.execute(sql, (pcapid, pin, dst))
-    dst_tag_dst = cursor.fetchone()
-    if dst_tag_dst:
-        sql = "INSERT IGNORE INTO Tag (tag, type) " \
-              "VALUES (%s, %s)"
-        cursor.execute(sql, (dst_tag_dst[1], "SRC"))
-        sql = "SELECT DISTINCT Tag.tagid, Tag.tag, Tag.type " \
-              "FROM Tag " \
-              "WHERE Tag.tag = %s " \
-              "AND Tag.type = 'SRC'"
-        cursor.execute(sql, (dst_tag_dst[1]))
-    dst_tag_src = cursor.fetchone()
+        cursor.execute(sql, (src_tag[0][1], "SRC"))
+        sql = "SELECT tagid FROM Tag " \
+              "WHERE tag = %s " \
+              "AND type = %s"
+        cursor.execute(sql, (src_tag[0][1], "SRC"))
+        src_tagid = cursor.fetchone()
+        sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (src_tagid, pcapid, pin))
 
-    sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)"
-    if src_tag_src:
-        print(src_tag_src)
-        cursor.execute(sql, (src_tag_src[0], pcapid, pin))
-    if src_tag_dst:
-        print(src_tag_dst)
-        cursor.execute(sql, (src_tag_dst[0], pcapid, pin))
-    if dst_tag_dst:
-        print(dst_tag_dst)
-        cursor.execute(sql, (dst_tag_dst[0], pcapid, pin))
-    if dst_tag_src:
-        print(dst_tag_src)
-        cursor.execute(sql, (dst_tag_src[0], pcapid, pin))
+    cursor.execute(tag_query, (pcapid, pin, dst, dst))
+    dst_tag = cursor.fetchall()
+    if len(dst_tag) > 0:
+        sql = "INSERT IGNORE INTO Tag (tag, type) " \
+              "VALUES (%s, %s)"
+        cursor.execute(sql, (src_tag[0][1], "DST"))
+        sql = "SELECT tagid FROM Tag " \
+              "WHERE tag = %s " \
+              "AND type = %s"
+        cursor.execute(sql, (src_tag[0][1], "DST"))
+        dst_tagid = cursor.fetchone()
+        sql = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)"
+        cursor.execute(sql, (dst_tagid, pcapid, pin))
     #print('new packet tagged!!')
 
 
