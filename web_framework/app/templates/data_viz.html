@@ -1,30 +1,125 @@
-<!DOCTYPE html>
+
+
+<DOCTYPE html>
 <html>
 <head>
-	<title>D3 Test</title>
+	<title>SniffyDB</title>
+	<ul class="nav nav-tabs" style="height: 45px;">
+                <a class="navbar-brand" href="/index">SniffyDB</a>
+                <!--<li role="presentation"><a href="/index">Home</a></li>-->
+                <li role="presentation"><a href="/view_page">View Data</a></li>
+                <li role="presentation"><a href="/upload">Upload PCAP</a></li>
+                <li role="presentation"><a href="/upload_config">Upload Config File</a></li>
+                <li role="presentation"><a data-href="/CLEAR" data-toggle="modal" data-target="#confirm-delete">Clear Table</a></li>
+                <li role="presentation"><a href="/data_viz">Data Viz</a></li>
+        </ul>
+
 
 
 	<!-- D3JS source script -->
 	<script src="//d3js.org/d3.v3.min.js" charset="utf-8"></script>
+	<script src="http://labratrevenge.com/d3-tip/javascripts/d3.tip.v0.6.3.js"></script>
 	<!-- JQuery source -->
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
+	<!-- Bootstrap -->
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>	
+	<script type="text/javascript" src="{{ url_for('static', filename='base64.js') }}"></script>
+
 	
 	<style>
 
-		.node {
-    			fill: #ccc;
-    			stroke: #fff;
-    			stroke-width: 2px;
+		.node circle {
+  			fill: #ccc;
+  			stroke: #fff;
+  			stroke-width: 1.5px;
 		}
 
-		.edge {
-    			stroke: #777;
+		text {
+  			font: 10px sans-serif;
+  			pointer-events: none;
+		}
+
+		.node:hover {
+			fill: orangered;	
+			payloads = result; 
+		}
+
+		.link {
+    			stroke: #616AD0;
     			stroke-width: 2px;
 		}
+		
+		.link:hover {
+  			stroke: orangered ;
+		}	
+
+		.d3-tip {
+ 			line-height: 1;
+  			font-weight: bold;
+  			padding: 12px;
+  			background: rgba(0, 0, 0, 0.8);
+  			color: #fff;
+  			border-radius: 2px;
+		}
+
+		ul {height:100px;}
+		ul {overflow:hidden; overflow-y:scroll;}
+
 
     	</style>	
+
+
+
+
 </head>
 <body>
+
+<div id="Payload Data"> 
+
+	<table border="1">
+		<tr>
+			<th>Payload Id</th>
+			<th>Src IP</th>
+			<th>Dst IP</th>
+			<th>Protocol</th>
+			<th>Payload</th>
+		</tr>
+		<tr>
+			<td id="payloadId"></td>
+			<td id="src"></td>
+			<td id="dst"></td>
+			<td id="protocol"></td>
+			<td><pre><p id="payload"></p> </pre></td>
+		</tr>
+	</table>
+</div>
+
+<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <p>You are about to delete the table, this procedure is irreversible.</p>
+                    <p>Do you want to proceed?</p>
+                    <p class="debug-url"></p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
 </body>
 
@@ -34,16 +129,157 @@
 	// Define the dimensions of the visualization. We're using
 	// a size that's convenient for displaying the graphic on
 	// http://jsDataV.is
-	var width = 640,
-    	    height = 480;	
+	var width = 840,
+    	    height = 600;	
 
+	var color = d3.scale.category20();
+
+	var ip_addresses = {};
+	var node_counter = 0;
 	var nodes = [];
-	var edges = [];	
+	var links = [];	
+	var payloads = [];
+	var payloadCounter = 1;
+	var srcDstToPayloads = {};
+	var idToPayload = {};
+	
+	function showDetails(id) {
+		var pl = idToPayload[id];
+
+		$('#payloadId').html(pl["id"]);
+		$('#src').html(pl["src"]);
+		$('#dst').html(pl["dst"]);
+		$('#protocol').html(pl["protocol"]);
+		$('#payload').html( pl["payload"]);
+
+		console.log(id);
+	}
+
+	$('#confirm-delete').on('show.bs.modal', function(e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+            
+            $('.debug-url').html('Delete URL: <strong>' + $(this).find('.btn-ok').attr('href') + '</strong>');
+        });	
+
 
 	$.ajax({url: "http://db.sniffy.co:5000/SHOWIP", success: function(result){
-        ipNodes = result;
-        console.log(ipNodes);
-    }});
+        	console.log(result);
+		payloads = JSON.parse(result,  function(k, v) {
+  			if (k === "payload" ) { if( v !== "None" && v !== "Payload is encrypted") { return Base64.decode(v);} else { return v;} } // if topmost value, return it,
+  			return v;               
+		});
+		console.log(payloads);
+	 
+		for( var i=0; i < payloads.length; i++) {
+			var payload = payloads[i];
+			payload.id = payloadCounter;
+			idToPayload[payloadCounter] = payload;
+			payloadCounter++;
+
+			if (!(ip_addresses.hasOwnProperty(payload["src"]))) {
+				ip_addresses[payload["src"]] = node_counter;
+				nodes.push({"ip": payload["src"]});
+				node_counter++;
+			}
+			if (!(ip_addresses.hasOwnProperty(payload["dst"]))) {
+				ip_addresses[payload["dst"]] = node_counter;
+				nodes.push({"ip": payload["dst"]});
+				node_counter++;
+			}
+
+			var srcDst = payload["src"] + " " + payload["dst"];
+			if (!(srcDstToPayloads.hasOwnProperty(srcDst))) {
+				srcDstToPayloads[srcDst] = [payload];
+			} else {
+				srcDstToPayloads[srcDst].push(payload);
+			}
+		}
+
+		// Actually fill the links array now 
+		var keys = Object.keys(srcDstToPayloads);
+		for (var i=0; i < keys.length; i++) {
+			var srcDstArr = keys[i].split(" ");
+			links.push({ source: ip_addresses[srcDstArr[0]], target: ip_addresses[srcDstArr[1]], payloads: srcDstToPayloads[keys[i]] });
+		}
+
+		
+
+		var force = d3.layout.force()
+    			.nodes(d3.values(nodes))
+    			.links(links)
+    			.size([width, height])
+    			.linkDistance(200)
+    			.charge(-300)
+    			.on("tick", tick)
+    			.start();
+
+		var svg = d3.select("body").append("svg")
+    			.attr("width", width)
+    			.attr("height", height);
+	
+
+		var tip = d3.tip()
+  			.attr('class', 'd3-tip')
+  			.offset([200, 0])
+  			.html(function(d) {
+				var loads = d.payloads; 
+				var htmlString = "<strong>Payloads:</strong> <ul>";
+
+				for(var i=0; i < loads.length; i++) {
+					htmlString += "<li><span style='color:red'>id: </span> <a onClick=\"showDetails(" + loads[i].id + ")\">" + loads[i].id + "</a></li>";
+				}
+				htmlString += "</ul>";
+
+    				return htmlString;
+  			})
+		svg.call(tip);
+
+
+		var link = svg.selectAll(".link")
+    			.data(force.links())
+  			.enter().append("line")
+    			.attr("class", "link")
+			.on('mouseover', tip.show)
+			.on('click', tip.hide);
+
+		// Now actually place the links on the svg layout 
+		// This is where the visual appears 
+		//var link = svg.selectAll('.link')
+    		//	.data(links)
+    		//	.enter().append('line')
+    		//	.attr('class', 'link')
+		//	.on('mouseover', tip.show)
+      		//	.on('click', tip.hide);
+
+		var node = svg.selectAll(".node")
+    			.data(force.nodes())
+  			.enter().append("g")
+    			.attr("class", "node")
+    			.call(force.drag);
+
+		node.append("circle")
+    			.attr("r", 25);
+
+		node.append("text")
+    			.attr("x", 12)
+    			.attr("dy", ".35em")
+    			.text(function(d) { return d.ip; });
+
+		function tick() {
+  			link
+      			.attr("x1", function(d) { return d.source.x; })
+      			.attr("y1", function(d) { return d.source.y; })
+      			.attr("x2", function(d) { return d.target.x; })
+      			.attr("y2", function(d) { return d.target.y; });
+
+  			node
+      				.attr("transform", function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+		}
+
+
+		// By this time in the code force is done 
+		console.log("done");
+	}});
 
 </script>
 

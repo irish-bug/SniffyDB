@@ -16,9 +16,17 @@ def decode_string(phrase):
 	decoded_string = base64.urlsafe_b64decode(phrase)
 	try:
 		decoded_string.decode('utf-8')
-		return decoded_string
+		return phrase
 	except UnicodeError:
 		return 'Payload is encrypted'
+
+def decode_view_string(phrase):
+	decoded_string = base64.urlsafe_b64decode(phrase)
+        try:
+                decoded_string.decode('utf-8')
+                return decoded_string
+        except UnicodeError:
+                return 'Payload is encrypted'
 
 class Database:
 
@@ -229,7 +237,7 @@ def db_get_request(pcapid, pin):
 					src=row['src'],
 					protocol=row['protocol'],
 					length=row['len'],
-					payload=row['payload'] if row['payload'] == 'None' else decode_string(row['payload']),
+					payload=row['payload'] if row['payload'] == 'None' else decode_view_string(row['payload']),
 					pcapid=row['pcapid'],
 					packettime=row['packettime'],
 					pin=row['pin'],
