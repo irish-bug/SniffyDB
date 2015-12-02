@@ -127,7 +127,7 @@ for p in pkts:
     if p.haslayer(IP):
         if p.haslayer(Raw):
             try:
-                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": base64.urlsafe_b64encode(p[Raw].load), "tag":{"SRC": check_load(key_dict, p[Raw].load)}}
+                packet_info = {"PcapID": pcap, "PIN": pkt_no, "time": p.time, "src": p[IP].src, "dest": p[IP].dst, "protocol": p[IP].proto, "length": p[IP].len, "Load": base64.urlsafe_b64encode(p[Raw].load), "tag":{"DST": check_load(key_dict, p[Raw].load)}}
                 json.dump(packet_info, _test, sort_keys=True, indent=4, separators=(',', ': '))
                 packet_data.append(packet_info)
 
