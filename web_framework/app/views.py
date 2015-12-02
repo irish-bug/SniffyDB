@@ -129,7 +129,7 @@ def edit_page():
 
 				# auto-tagging stuff
 				tagid = cur[0]['tagid']
-				query = "SELECT src, dst FROM Packet WHERE pcapid = %s AND pin = %s" % (pcapid, pin)
+				query = "SELECT src, dst FROM Packet WHERE pcapid = %s AND pin = %s" % ("'"+pcapid+"'", pin)
 				cur = db.query(query)
 				ip = cur[0]['src'] if type_val == "SRC" else cur[0]['dst']
 
@@ -138,9 +138,9 @@ def edit_page():
 
 				# auto-tag on the opposite side
 				new_type = "DST" if type_val == "SRC" else "SRC"
-				query = "INSERT IGNORE INTO Tag (tag, type) VALUES (%s, %s)" %  (tag, new_type)
+				query = "INSERT IGNORE INTO Tag (tag, type) VALUES (%s, %s)" %  ("'"+tag+"'", "'"+new_type+"'")
 				db.execute(query)
-				query = "SELECT tagid FROM Tag WHERE tag=%s AND type=%s" % (tag, new_type)
+				query = "SELECT tagid FROM Tag WHERE tag=%s AND type=%s" % ("'"+tag+"'", "'"+new_type+"'")
 				cur = db.query(query)
 				new_tagid = cur[0]['tagid']
 				auto_tag(db, tag, ip, new_type, new_tagid)
@@ -157,14 +157,14 @@ def edit_page():
 def auto_tag(db, tag, ip, type, tagid):
 	query = ""
 	if type == "SRC":
-		query = "SELECT pcapid, pin FROM Packet WHERE Packet.src = %s" % (ip)
+		query = "SELECT pcapid, pin FROM Packet WHERE Packet.src = %s" % ("'"+ip+"'")
 	else:
-		query = "SELECT pcapid, pin FROM Packet WHERE Packet.dst = %s" % (ip)
+		query = "SELECT pcapid, pin FROM Packet WHERE Packet.dst = %s" % ("'"+ip+"'")
 	cur = db.query(query)
 	for p in cur:
 		pcapid = p['pcapid']
 		pin = p['pin']
-		query = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)" %  (tagid, pcapid, pin)
+		query = "INSERT IGNORE INTO Tagged (tagid, pcapid, pin) VALUES (%s, %s, %s)" %  (tagid, "'"+pcapid+"'", pin)
 		db.execute(query)
 
 @app.route('/delete_page', methods=['GET', 'POST'])
