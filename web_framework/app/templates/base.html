@@ -7,6 +7,8 @@
 	<!-- JQuery source -->
 	<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.11.3.min.js"></script>
 	
+	 <!-- Latest compiled and minified JavaScript -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script> 	
 <!-- Latest compiled and minified CSS -->
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.10/css/jquery.dataTables.min.css">
@@ -16,8 +18,8 @@
 		<!--<li role="presentation"><a href="/index">Home</a></li>-->
   		<li role="presentation"><a href="/view_page">View Data</a></li>
 		<li role="presentation"><a href="/upload">Upload PCAP</a></li>
-		<li role="presentation"><a href="/upload_config">Upload Config File</a></li>
-                <li role="presentation"><a href="/CLEAR">Clear Table</a></li>
+		<li role="presentation"><a href="/upload_config">Upload Tag List</a></li>
+                <li role="presentation"><a data-href="/CLEAR" data-toggle="modal" data-target="#confirm-delete">Clear Table</a></li>
 		<li role="presentation"><a href="/data_viz">Data Viz</a></li>
 	</ul>
 
@@ -28,7 +30,40 @@
     {% endif %}
   </head>
   <body>
-    <!--
+
+	<div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+            
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                </div>
+            
+                <div class="modal-body">
+                    <p>You are about to delete the table, this procedure is irreversible.</p>
+                    <p>Do you want to proceed?</p>
+                    <p class="debug-url"></p>
+                </div>
+                
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+
+	<script>
+        $('#confirm-delete').on('show.bs.modal', function(e) {
+            $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
+            
+            $('.debug-url').html('Delete URL: <strong>' + $(this).find('.btn-ok').attr('href') + '</strong>');
+        });
+    	</script>
+
+<!--
 	<div>SniffyDB: <a href="/index">Home</a></div>
     <div>SniffyDB: <a href="/add_page">Add Data</a></div>
     <div>SniffyDB: <a href="/view_page">View Data</a></div>
