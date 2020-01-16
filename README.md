@@ -2,7 +2,7 @@
 Evolution of Sniffy to include database functionality, visualization and analytics
 
 ############################################################ 
-                    WElCOME TO SNIFFY 2.0
+                    WELCOME TO SNIFFY 2.0
 ############################################################ 
 #                                                          # 
 # Sniffy 2.0 is a packet sniffer and quite easy to use.    # 
